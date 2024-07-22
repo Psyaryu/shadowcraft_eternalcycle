@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ShadowCraft
 {
@@ -14,7 +15,7 @@ namespace ShadowCraft
 
         public void OnBattle()
         {
-            Debug.Log("BATTLE!!!");
+            SceneManager.LoadScene("BattleScene", LoadSceneMode.Single);
         }
     }
 }
