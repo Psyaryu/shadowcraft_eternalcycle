@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 38ee82f1e3f2b484d8bc47d73dfbf565, type: 3}
-  m_Name: Player
+  m_Name: Opponent
   m_EditorClassIdentifier: 
-  Name: Player
+  Name: Enemy
   health: 30
-  deck: {fileID: 11400000, guid: 53d27f73f3dfe4686a8be32bbf76433b, type: 2}
+  deck: {fileID: 0}
