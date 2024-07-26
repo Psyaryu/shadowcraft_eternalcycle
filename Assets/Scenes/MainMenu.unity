@@ -912,8 +912,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55d73c68e20b94d319665b8f443a7c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 11400000, guid: 706abc022af7f4c7e9025bd08b41241b, type: 2}
-  opponent: {fileID: 11400000, guid: 6da42caea29034b60a51da7e17ca4651, type: 2}
+  playerCharacter: {fileID: 11400000, guid: 706abc022af7f4c7e9025bd08b41241b, type: 2}
+  opponentCharacter: {fileID: 11400000, guid: 6da42caea29034b60a51da7e17ca4651, type: 2}
 --- !u!4 &2122740887
 Transform:
   m_ObjectHideFlags: 0

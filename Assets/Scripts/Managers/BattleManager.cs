@@ -7,16 +7,25 @@ namespace ShadowCraft
 {
     public class BattleManager : MonoBehaviour
     {
-        // TODO: Replace all instances of CharacterAsset with the new player script in clickup task
-        // https://app.clickup.com/t/86b1drvcb
-
         #region Properties
+
+        [SerializeField]
+        CardWidget cardPrefab = null;
+
+        [SerializeField]
+        Transform handParent = null;
+
+        [SerializeField]
+        int startingHand = 5;
 
         bool battleRunning = true;
         bool endOfTurn = false;
 
-        CharacterAsset player = null;
-        CharacterAsset opponent = null;
+        Player player = null;
+        Player opponent = null;
+
+        List<CardWidget> hand = new List<CardWidget>();
+        List<CardWidget> field = new List<CardWidget>();
 
         #endregion
 
@@ -25,12 +34,17 @@ namespace ShadowCraft
         private void Awake()
         {
             player = GameManager.shared.player;
-            opponent = GameManager.shared.opponent;
+            opponent = GameManager.shared.ai;
         }
 
         private void Start()
         {
             StartCoroutine(MainBattleSequence());
+        }
+
+        private void OnDisable()
+        {
+            StopAllCoroutines();
         }
 
         #endregion
@@ -41,7 +55,7 @@ namespace ShadowCraft
         {
             yield return StartOfBattle();
 
-            var characters = new List<CharacterAsset> { player, opponent };
+            var characters = new List<Player> { player, opponent };
 
             while (GetBattleIsRunning())
             {
@@ -64,38 +78,62 @@ namespace ShadowCraft
             yield return null;
         }
 
-        IEnumerator StartOfTurn(CharacterAsset character)
+        IEnumerator StartOfTurn(Player player)
         {
-            Debug.Log($"{character.Name} Start of Turn");
+            Debug.Log($"{player.character.Name} Start of Turn");
             endOfTurn = false;
             yield return null;
         }
 
-        IEnumerator DrawPhase(CharacterAsset character)
+        IEnumerator DrawPhase(Player player)
         {
-            Debug.Log($"{character.Name} Draw");
-            yield return null;
+            var card = player.Draw();
+
+            if (card == null)
+                yield break;
+
+            Debug.Log($"{player.character.Name} Draw");
+            Instantiate(cardPrefab, handParent);
+
+            var maxWidth = 11f; // board is 15, so 10 + card buffer
+            var sectionWidth = 2.5f; // card size
+            var totalCards = Mathf.Floor(maxWidth / sectionWidth) + 1;
+
+            var yPosition = handParent.position.y;
+
+            var shiftAmount = Mathf.Min((handParent.childCount - 1) / 2f * sectionWidth, maxWidth / 2f);
+
+            var cardPercent = (handParent.childCount - totalCards) / handParent.childCount;
+
+            for (int i = 0; i < handParent.childCount; i++)
+            {
+                var flexShift = handParent.childCount > totalCards ? cardPercent * sectionWidth * i : 0;
+                var xPosition = i * sectionWidth - shiftAmount - flexShift;
+
+                var cardTransform = handParent.GetChild(i);
+                cardTransform.position = new Vector3(xPosition, yPosition, -(i / 100f));
+            }
         }
 
-        IEnumerator StandbyPhase(CharacterAsset character)
+        IEnumerator StandbyPhase(Player player)
         {
-            Debug.Log($"{character.Name} Stand By");
+            Debug.Log($"{player.character.Name} Stand By");
             while (!endOfTurn)
             {
                 yield return null;
             }
         }
 
-        IEnumerator BattlePhase(CharacterAsset character)
+        IEnumerator BattlePhase(Player player)
         {
-            Debug.Log($"{character.Name} Battle");
-            var otherCharacter = GetOtherCharacter(character);
+            Debug.Log($"{player.character.Name} Battle");
+            var otherCharacter = GetOtherCharacter(player);
             yield return null;
         }
 
-        IEnumerator EndOfTurn(CharacterAsset character)
+        IEnumerator EndOfTurn(Player player)
         {
-            Debug.Log($"{character.Name} End of Turn");
+            Debug.Log($"{player.character.Name} End of Turn");
             yield return null;
         }
 
@@ -112,7 +150,7 @@ namespace ShadowCraft
 
         private bool GetBattleIsRunning() => battleRunning;
 
-        private CharacterAsset GetOtherCharacter(CharacterAsset character) => character == player ? opponent : player;
+        private Player GetOtherCharacter(Player battlePlayer) => battlePlayer == player ? opponent : player;
 
         #endregion
 
@@ -121,6 +159,7 @@ namespace ShadowCraft
         public void OnMainMenu()
         {
             battleRunning = false;
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
 
         public void OnEndTurn()
