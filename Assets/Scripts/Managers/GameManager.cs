@@ -8,8 +8,14 @@ namespace ShadowCraft
     {
         public static GameManager shared = null;
 
-        public CharacterAsset player = null;
-        public CharacterAsset opponent = null;
+        [SerializeField]
+        CharacterAsset playerCharacter = null;
+
+        [SerializeField]
+        CharacterAsset opponentCharacter = null;
+
+        public Player player = null;
+        public Player ai = null;
 
         private void Awake()
         {
@@ -19,6 +25,9 @@ namespace ShadowCraft
                 Destroy(this);
 
             DontDestroyOnLoad(shared);
+
+            player = new Player(playerCharacter);
+            ai = new AIPlayer(opponentCharacter);
         }
     }
 }

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Enemy
   health: 30
-  deck: {fileID: 0}
+  deck: {fileID: 11400000, guid: 53d27f73f3dfe4686a8be32bbf76433b, type: 2}
