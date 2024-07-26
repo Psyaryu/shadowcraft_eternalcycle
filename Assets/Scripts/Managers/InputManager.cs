@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShadowCraft
@@ -9,6 +7,7 @@ namespace ShadowCraft
         public static InputManager shared = null;
 
         private CardWidget currentCard = null;
+        private BoardSlot boardSlot = null;
 
         private Vector3 LastPosition = Vector3.zero;
 
@@ -28,6 +27,12 @@ namespace ShadowCraft
         }
 
         void Update()
+        {
+            UpdateCard();
+            UpdateBoardSlot();
+        }
+
+        private void UpdateCard()
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(ray, out RaycastHit hitInfo))
@@ -68,7 +73,8 @@ namespace ShadowCraft
                 return;
             }
 
-            if (!IsDragging && !IsMouseDown) {
+            if (!IsDragging && !IsMouseDown)
+            {
                 card.OnClick();
                 IsMouseDown = true;
                 return;
@@ -86,6 +92,41 @@ namespace ShadowCraft
 
             LastPosition = Input.mousePosition;
             card.OnDrag(Input.mousePosition);
+        }
+
+        private void UpdateBoardSlot()
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var mask = LayerMask.GetMask("BoardSlot");
+
+            if (!Physics.Raycast(ray, out RaycastHit hitInfo, float.PositiveInfinity, mask))
+            {
+                if (boardSlot != null)
+                {
+                    boardSlot?.OnHoverExit();
+                    boardSlot = null;
+                }
+                return;
+            }
+
+            if (hitInfo.collider.tag != "BoardSlot")
+                return;
+
+            var boardSlotHit = hitInfo.collider.transform.parent.GetComponent<BoardSlot>();
+
+            if (boardSlot == null)
+            {
+                boardSlot = boardSlotHit;
+                boardSlot.OnHover();
+                return;
+            }
+
+            if (boardSlot != boardSlotHit)
+            {
+                boardSlot.OnHoverExit();
+                boardSlot = boardSlotHit;
+                boardSlot.OnHover();
+            }
         }
     }
 }
