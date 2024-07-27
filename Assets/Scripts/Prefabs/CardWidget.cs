@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace ShadowCraft
@@ -5,7 +6,22 @@ namespace ShadowCraft
     public class CardWidget : MonoBehaviour
     {
         public Card card { get; set; }
+        private TMP_Text attack;
+        private TMP_Text health;
+        private TMP_Text cardName;
         public bool isPlaced = false;
+
+        private void Start()
+        {
+            attack = transform.Find("Attack").GetComponent<TMP_Text>();
+            health = transform.Find("Health").GetComponent<TMP_Text>();
+            cardName = transform.Find("Name").GetComponent<TMP_Text>();
+
+            attack.text = card.attack.ToString();
+            health.text = card.health.ToString();
+            cardName.text = card.cardName;
+
+        }
 
         public void OnHoverEnter()
         {

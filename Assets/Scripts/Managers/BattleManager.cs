@@ -1,13 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static ShadowCraft.Card;
 
 namespace ShadowCraft
 {
     public class BattleManager : MonoBehaviour
     {
         #region Properties
+        //Index Identifiers for ManaTypes
+        int light1 = 0;
+        int light2 = 1;
+        int neut1 = 2;
+        int neut2 = 3;
+        int dark1 = 4;
+        int dark2 = 5;
+
+        int[] elementalMastery = { 0, 0, 0, 0, 0, 0 };
+
+        int[] playerMana = { 0, 0, 0, 0, 0, 0 };
 
         public static BattleManager shared = null;
 
@@ -34,6 +48,16 @@ namespace ShadowCraft
         List<CardWidget> hand = new List<CardWidget>();
         List<CardWidget> field = new List<CardWidget>();
 
+        public GameObject manaTextParent = null;
+        private TMP_Text light1Text = null;
+        private TMP_Text light2Text = null;
+        private TMP_Text neut1Text = null;
+        private TMP_Text neut2Text = null;
+        private TMP_Text dark1Text = null;
+        private TMP_Text dark2Text = null;
+
+
+
         #endregion
 
         #region Unity Methods
@@ -47,6 +71,13 @@ namespace ShadowCraft
 
         private void Start()
         {
+            light1Text = manaTextParent.transform.Find("Light1").GetComponent<TMP_Text>();
+            light2Text = manaTextParent.transform.Find("Light2").GetComponent<TMP_Text>();
+            neut1Text = manaTextParent.transform.Find("Neut1").GetComponent<TMP_Text>();
+            neut2Text = manaTextParent.transform.Find("Neut2").GetComponent<TMP_Text>();
+            dark1Text = manaTextParent.transform.Find("Dark1").GetComponent<TMP_Text>();
+            dark2Text = manaTextParent.transform.Find("Dark2").GetComponent<TMP_Text>();
+
             StartCoroutine(MainBattleSequence());
         }
 
@@ -95,6 +126,9 @@ namespace ShadowCraft
         IEnumerator StartOfTurn(Player player)
         {
             Debug.Log($"{player.character.Name} Start of Turn");
+            playerMana = ProduceMana(playerMana, player.manaProductionRate);
+            SetManaTextValues(playerMana);
+
             endOfTurn = false;
             yield return null;
         }
@@ -176,21 +210,90 @@ namespace ShadowCraft
         public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
-            if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard)
+            int[] mastery = CanAffordMana(playerMana, cardWidget.card.manaCost);
+
+            if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard || mastery == null)
             {
                 PositionHandCards();
                 cardWidget.isPlaced = false;
                 return;
             }
-
+            playerMana = SubtractMana(mastery, playerMana);
+            SetManaTextValues(playerMana);
+            elementalMastery = UpdateElementalMastery(elementalMastery, cardWidget.card.cardType);
             gameBoardWidget.AddCard(cardWidget, boardSlot);
             currentPlayer.PlayCard(cardWidget.card);
+        }
+        public int[] CanAffordMana(int[] playerMana, int[] manaCost)
+        {
+            int[] masteryCost;
+
+            masteryCost = SubtractMana(elementalMastery, manaCost);
+
+            for(int i = 0; i < playerMana.Length; i++)
+            {
+                if (playerMana[i] < manaCost[i])
+                {
+                    return null;
+                }
+            }
+
+            return masteryCost;
+        }
+
+        public int[] SubtractMana(int[] elementalMastery, int[] manaCost)
+        {
+            int[] remainingCost = manaCost.Zip(elementalMastery, (a, b) => a - b).ToArray();
+
+            for (int i = 0; i < playerMana.Length; i++)
+            {
+                if (remainingCost[i] < 0)
+                {
+                    remainingCost[1] = 0; ;
+                }
+            }
+
+            return remainingCost;
         }
 
         public bool CanPlaceCardInSlot(BoardSlot boardSlot)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
             return canPlaceCard;
+        }
+
+        public int[] ProduceMana(int[] increaseAmounts, int[] playerMana)
+        {
+            int[] newMana = increaseAmounts.Zip(playerMana, (a, b) => a + b).ToArray();
+            return newMana;
+        }
+
+        public int[] UpdateElementalMastery(int[] mastery, ManaTypes cardType)
+        {
+
+            switch(cardType.ToString())
+            {
+                case "light1":
+                    mastery[light1]++;
+                    break;
+                case "light2":
+                    mastery[light2]++;
+                    break;
+                case "neut1":
+                    mastery[neut1]++;
+                    break;
+                case "neut2":
+                    mastery[neut2]++;
+                    break;
+                case "dark1":
+                    mastery[dark1]++;
+                    break;
+                case "dark2":
+                    mastery[dark2]++;
+                    break;
+            }
+
+            return mastery;
         }
 
         #endregion
@@ -219,6 +322,16 @@ namespace ShadowCraft
         public void OnEndTurn()
         {
             endOfTurn = true;
+        }
+
+        public void SetManaTextValues(int[] values)
+        {
+            light1Text.text = "Light1: " + values[light1].ToString();
+            light2Text.text = "Light2: " + values[light2].ToString();
+            neut1Text.text = "neut1: " + values[neut1].ToString();
+            neut2Text.text = "neut2: " + values[neut2].ToString();
+            dark1Text.text = "dark1: " + values[dark1].ToString();
+            dark2Text.text = "dark2: " + values[dark2].ToString();
         }
 
         #endregion
