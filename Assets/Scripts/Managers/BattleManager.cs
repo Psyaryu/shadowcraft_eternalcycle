@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,6 +26,8 @@ namespace ShadowCraft
         int[] playerMana = { 0, 0, 0, 0, 0, 0 };
 
         public static BattleManager shared = null;
+
+        public List<Card> effectedCards = new List<Card>();
 
         [SerializeField]
         CardWidget cardPrefab = null;
@@ -55,6 +59,8 @@ namespace ShadowCraft
         private TMP_Text neut2Text = null;
         private TMP_Text dark1Text = null;
         private TMP_Text dark2Text = null;
+
+        
 
 
 
@@ -168,6 +174,30 @@ namespace ShadowCraft
             yield return null;
         }
 
+        public IEnumerator CardSelectFieldCor()
+        {
+            while (true)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    // Perform raycasting
+                    if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+                    {
+                        CardWidget temp = hit.collider.GetComponent<CardWidget>();
+                        Card temp1 = temp.card;
+
+                        if (temp != null)
+                        {
+                            // Invoke the callback with the hit object
+                            effectedCards.Add(temp1);
+                            yield break; // Stop the coroutine once the object is found
+                        }
+                    }
+                }
+                yield return null;
+            }   
+        }
         IEnumerator EndOfTurn(Player player)
         {
             Debug.Log($"{player.character.Name} End of Turn");
@@ -223,6 +253,16 @@ namespace ShadowCraft
             elementalMastery = UpdateElementalMastery(elementalMastery, cardWidget.card.cardType);
             gameBoardWidget.AddCard(cardWidget, boardSlot);
             currentPlayer.PlayCard(cardWidget.card);
+
+            Type type = Type.GetType(cardWidget.card.cardName);
+
+            GameObject newObject = new GameObject("ScriptInstanceObject");
+            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+            MethodInfo effectMethod = type.GetMethod("Effect");
+
+            effectMethod.Invoke(scriptInstance, null);
+
         }
         public int[] CanAffordMana(int[] playerMana, int[] manaCost)
         {

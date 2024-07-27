@@ -14,12 +14,25 @@ public class TestCard : MonoBehaviour
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "dark1", true);
     string cardName = "TestCard";
 
-
     #region Effects
 
     //TODO: Add one attack to itself
 
     #endregion
+    public void Effect()
+    {
+        List<Card> effectedCards = new List<Card>();
+        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
+
+        effectedCards = BattleManager.shared.effectedCards;
+
+        for (int i = 0; i < effectedCards.Count; i++)
+        {
+            effectedCards[i].health++; 
+        }
+        
+    }
+
 
     #region Conversion
     public Card ToCard()

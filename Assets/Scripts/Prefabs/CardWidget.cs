@@ -23,6 +23,17 @@ namespace ShadowCraft
 
         }
 
+        private void Update()
+        {
+            attack = transform.Find("Attack").GetComponent<TMP_Text>();
+            health = transform.Find("Health").GetComponent<TMP_Text>();
+            cardName = transform.Find("Name").GetComponent<TMP_Text>();
+
+            attack.text = card.attack.ToString();
+            health.text = card.health.ToString();
+            cardName.text = card.cardName;
+        }
+
         public void OnHoverEnter()
         {
 
