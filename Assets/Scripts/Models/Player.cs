@@ -14,12 +14,35 @@ namespace ShadowCraft
         List<Card> hand = new List<Card>();
         public List<Card> field = new List<Card>();
         List<Card> graveyard = new List<Card>();
+        public int[] manaProductionRate = { 0, 0, 0, 0, 0, 0 };
 
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
-            deck = Object.Instantiate(character.deck).cards;
+            AddToDeck("TestCard");
+            AddToDeck("TestCard");
+            AddToDeck("TestCard");
+            AddToDeck("TestCard");
+            AddToDeck("TestCard");
+            manaProductionRate = SetProductionRate();
             health = character.health;
+        }
+
+        public int[] SetProductionRate()
+        {
+            //TODO: Add statment to set production rate dependant on class?
+            int[] rate = { 1, 1, 1, 1, 1, 1 };
+            return rate;
+        }
+
+        virtual public void AddToDeck(string cardType)
+        {
+            Card newCard = Card.CreateCard(cardType);
+            
+            if(newCard != null)
+            {
+                deck.Add(newCard);
+            }
         }
 
         virtual public Card Draw()
