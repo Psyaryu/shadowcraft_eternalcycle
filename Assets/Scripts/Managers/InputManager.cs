@@ -4,6 +4,8 @@ namespace ShadowCraft
 {
     public class InputManager : MonoBehaviour
     {
+        #region Properties
+
         public static InputManager shared = null;
 
         private CardWidget currentCard = null;
@@ -14,6 +16,10 @@ namespace ShadowCraft
         private bool IsMouseDown = false;
         private bool IsDragging = false;
         private bool IsHover = false;
+
+        #endregion
+
+        #region Unity Methods
 
         private void Awake()
         {
@@ -32,10 +38,15 @@ namespace ShadowCraft
             UpdateBoardSlot();
         }
 
+        #endregion
+
+        #region Game Object Tracker
+
         private void UpdateCard()
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (!Physics.Raycast(ray, out RaycastHit hitInfo))
+            var mask = LayerMask.GetMask("Card");
+            if (!Physics.Raycast(ray, out RaycastHit hitInfo, float.PositiveInfinity, mask))
             {
                 if (IsHover)
                 {
@@ -80,18 +91,21 @@ namespace ShadowCraft
                 return;
             }
 
+            var screenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -10);
+            var location = Camera.main.ScreenToWorldPoint(screenPoint);
+
             if (!IsDragging)
             {
                 IsDragging = true;
-                card.OnDrag(Input.mousePosition);
+                card.OnDrag(location);
                 return;
             }
 
-            if (Input.mousePosition == LastPosition)
+            if (location == LastPosition)
                 return;
 
-            LastPosition = Input.mousePosition;
-            card.OnDrag(Input.mousePosition);
+            LastPosition = location;
+            card.OnDrag(location);
         }
 
         private void UpdateBoardSlot()
@@ -128,5 +142,14 @@ namespace ShadowCraft
                 boardSlot.OnHover();
             }
         }
+
+        #endregion
+
+        #region Getters
+
+        public BoardSlot GetBoardSlot() => boardSlot;
+        public CardWidget GetCardWidget() => currentCard;
+
+        #endregion
     }
 }

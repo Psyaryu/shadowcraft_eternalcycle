@@ -10,6 +10,8 @@ namespace ShadowCraft
 {
     public class GameBoardWidget : MonoBehaviour
     {
+        #region Properties
+
         [SerializeField]
         int numberOfCardSlots = 5;
 
@@ -24,6 +26,10 @@ namespace ShadowCraft
 
         CardWidget[] cards = null;
 
+        #endregion
+
+        #region Unity Methods
+
         private void Awake()
         {
             cards = new CardWidget[CardSlots.Count];
@@ -31,19 +37,18 @@ namespace ShadowCraft
                 CardSlots[i].SlotNumber = i;
         }
 
-        //private void Start()
-        //{
-        //    for (int i = 0; i < CardSlots.Count; i++)
-        //        CardSlots[i].SlotNumber = i;
-        //}
+        #endregion
 
-        public void AddCard(CardWidget cardWidget, int slot)
+        #region Card Functions
+        
+        public void AddCard(CardWidget cardWidget, BoardSlot boardSlot)
         {
-            if (slot >= CardSlots.Count)
+            if (boardSlot.SlotNumber >= CardSlots.Count)
                 return;
 
-            cardWidget.transform.position = CardSlots[slot].transform.position;
-            cards[slot] = cardWidget;
+            cardWidget.transform.parent = boardSlot.transform;
+            cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
+            cards[boardSlot.SlotNumber] = cardWidget;
         }
 
         public void MoveCard(int fromSlot, int toSlot)
@@ -58,6 +63,15 @@ namespace ShadowCraft
             cards[slot] = null;
         }
 
+        #endregion
+
+        #region Getters
+
+        public bool GetIsSlotEmpty(BoardSlot boardSlot) => cards[boardSlot.SlotNumber] == null;
+
+        #endregion
+
+        #region Editor
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -87,5 +101,6 @@ namespace ShadowCraft
             DeckPositions.ForEach(Slot => Handles.DrawSolidArc(Slot.position, Slot.forward, Slot.up, 360f, 1f));
         }
 #endif
+        #endregion
     }
 }

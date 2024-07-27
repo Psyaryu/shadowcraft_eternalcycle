@@ -51,9 +51,11 @@ MonoBehaviour:
   DarkColor: {r: 0, g: 0, b: 0, a: 1}
   LightColor: {r: 1, g: 1, b: 1, a: 1}
   HoverLightColor: {r: 0, g: 1, b: 0, a: 1}
-  HoverDarkColor: {r: 0, g: 1, b: 0, a: 1}
-  HoverFilledLightColor: {r: 0, g: 1, b: 0, a: 1}
-  HoverFilledDarkColor: {r: 0, g: 1, b: 0, a: 1}
+  HoverDarkColor: {r: 0.013794942, g: 0.5849056, b: 0.013794942, a: 1}
+  HoverCantPlaceLightColor: {r: 1, g: 0, b: 0.03653574, a: 1}
+  HoverCantPlaceDarkColor: {r: 0.6603774, g: 0, b: 0.050594088, a: 1}
+  HoverFilledLightColor: {r: 0.9433962, g: 0.057849795, b: 0.85535806, a: 1}
+  HoverFilledDarkColor: {r: 0.6132076, g: 0.00867745, b: 0.49671093, a: 1}
 --- !u!1 &8820827568405171352
 GameObject:
   m_ObjectHideFlags: 0

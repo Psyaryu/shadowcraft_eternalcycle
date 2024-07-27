@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8888153471486746826}
   - component: {fileID: 8098045742759277165}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: CardWidget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8fb625f821f4b27b236b179425c215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlaced: 0
 --- !u!1 &2747757944997504598
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,7 +58,7 @@ GameObject:
   - component: {fileID: 3072200745221489304}
   - component: {fileID: 8276069145047040971}
   - component: {fileID: 5203570317355485950}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Cube
   m_TagString: Card
   m_Icon: {fileID: 0}

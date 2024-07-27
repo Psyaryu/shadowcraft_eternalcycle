@@ -9,6 +9,8 @@ namespace ShadowCraft
     {
         #region Properties
 
+        public static BattleManager shared = null;
+
         [SerializeField]
         CardWidget cardPrefab = null;
 
@@ -18,11 +20,16 @@ namespace ShadowCraft
         [SerializeField]
         int startingHand = 5;
 
+        [SerializeField]
+        GameBoardWidget gameBoardWidget = null;
+
         bool battleRunning = true;
         bool endOfTurn = false;
+        bool isStandByPhase = false;
 
         Player player = null;
         Player opponent = null;
+        Player currentPlayer = null;
 
         List<CardWidget> hand = new List<CardWidget>();
         List<CardWidget> field = new List<CardWidget>();
@@ -35,6 +42,7 @@ namespace ShadowCraft
         {
             player = GameManager.shared.player;
             opponent = GameManager.shared.ai;
+            shared = this;
         }
 
         private void Start()
@@ -45,6 +53,7 @@ namespace ShadowCraft
         private void OnDisable()
         {
             StopAllCoroutines();
+            shared = null;
         }
 
         #endregion
@@ -60,11 +69,16 @@ namespace ShadowCraft
             while (GetBattleIsRunning())
             {
                 foreach (var character in characters)
-                {
+                { 
+                    currentPlayer = character;
                     yield return StartOfTurn(character);
                     yield return DrawPhase(character);
                     yield return StandbyPhase(character);
                     yield return BattlePhase(character);
+
+                    if (GetOtherCharacter(character).IsDead())
+                        break;
+
                     yield return EndOfTurn(character);
                 }
             }
@@ -93,8 +107,52 @@ namespace ShadowCraft
                 yield break;
 
             Debug.Log($"{player.character.Name} Draw");
-            Instantiate(cardPrefab, handParent);
+            var cardWidget = Instantiate(cardPrefab, handParent);
+            cardWidget.card = card;
 
+            PositionHandCards();
+        }
+
+        IEnumerator StandbyPhase(Player player)
+        {
+            isStandByPhase = true;
+            Debug.Log($"{player.character.Name} Stand By");
+            while (!endOfTurn)
+            {
+                yield return null;
+            }
+            isStandByPhase = false;
+        }
+
+        IEnumerator BattlePhase(Player player)
+        {
+            Debug.Log($"{player.character.Name} Battle");
+            var otherCharacter = GetOtherCharacter(player);
+
+            player.field.ForEach(Card => otherCharacter.Attack(Card));
+
+            yield return null;
+        }
+
+        IEnumerator EndOfTurn(Player player)
+        {
+            Debug.Log($"{player.character.Name} End of Turn");
+            yield return null;
+        }
+
+        IEnumerator EndOfBattle()
+        {
+            Debug.Log("End of Battle");
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            yield return null;
+        }
+
+        #endregion
+
+        #region Battle Utilities
+
+        public void PositionHandCards()
+        {
             var maxWidth = 11f; // board is 15, so 10 + card buffer
             var sectionWidth = 2.5f; // card size
             var totalCards = Mathf.Floor(maxWidth / sectionWidth) + 1;
@@ -115,42 +173,38 @@ namespace ShadowCraft
             }
         }
 
-        IEnumerator StandbyPhase(Player player)
+        public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
         {
-            Debug.Log($"{player.character.Name} Stand By");
-            while (!endOfTurn)
+            var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+            if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard)
             {
-                yield return null;
+                PositionHandCards();
+                cardWidget.isPlaced = false;
+                return;
             }
+
+            gameBoardWidget.AddCard(cardWidget, boardSlot);
+            currentPlayer.PlayCard(cardWidget.card);
         }
 
-        IEnumerator BattlePhase(Player player)
+        public bool CanPlaceCardInSlot(BoardSlot boardSlot)
         {
-            Debug.Log($"{player.character.Name} Battle");
-            var otherCharacter = GetOtherCharacter(player);
-            yield return null;
-        }
-
-        IEnumerator EndOfTurn(Player player)
-        {
-            Debug.Log($"{player.character.Name} End of Turn");
-            yield return null;
-        }
-
-        IEnumerator EndOfBattle()
-        {
-            Debug.Log("End of Battle");
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-            yield return null;
+            var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+            return canPlaceCard;
         }
 
         #endregion
 
         #region Getters
 
-        private bool GetBattleIsRunning() => battleRunning;
+        private bool GetBattleIsRunning()
+        {
+            return !player.IsDead() && !opponent.IsDead() && battleRunning;
+        }
 
         private Player GetOtherCharacter(Player battlePlayer) => battlePlayer == player ? opponent : player;
+
+        public bool GetIsStandByPhase() => isStandByPhase;
 
         #endregion
 
