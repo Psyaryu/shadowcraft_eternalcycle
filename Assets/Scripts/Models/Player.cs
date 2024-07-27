@@ -8,15 +8,18 @@ namespace ShadowCraft
     {
         public CharacterAsset character = null;
 
+        int health = -1;
+
         List<Card> deck = new List<Card>();
         List<Card> hand = new List<Card>();
-        List<Card> field = new List<Card>();
+        public List<Card> field = new List<Card>();
         List<Card> graveyard = new List<Card>();
 
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
             deck = Object.Instantiate(character.deck).cards;
+            health = character.health;
         }
 
         virtual public Card Draw()
@@ -69,6 +72,16 @@ namespace ShadowCraft
             deck.AddRange(hand);
             ShuffleDeck();
         }
+
+        public void Attack(Card card)
+        {
+            // TODO: Determine if we need to attack the player directly or one of the cards on the field
+            health -= card.attack;
+
+            Debug.Log($"{character.Name} took {card.attack} damage");
+        }
+
+        public bool IsDead() => health <= 0;
     }
 
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a1a49f550b743438dd70f4469c59af, type: 3}
   m_Name: SampleCard
   m_EditorClassIdentifier: 
-  attack: 1
+  attack: 10
   health: 4
   description: This card does nothing!
   manaCosts:
