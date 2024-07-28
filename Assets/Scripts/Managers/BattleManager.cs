@@ -38,7 +38,6 @@ namespace ShadowCraft
         GameBoardWidget gameBoardWidget = null;
 
         bool battleRunning = true;
-        bool endOfTurn = false;
         bool isStandByPhase = false;
 
         Player player = null;
@@ -129,7 +128,8 @@ namespace ShadowCraft
             playerMana = ProduceMana(playerMana, player.manaProductionRate);
             SetManaTextValues(playerMana);
 
-            endOfTurn = false;
+            player.finishedStandBy = false;
+
             yield return null;
         }
 
@@ -151,10 +151,9 @@ namespace ShadowCraft
         {
             isStandByPhase = true;
             Debug.Log($"{player.character.Name} Stand By");
-            while (!endOfTurn)
-            {
-                yield return null;
-            }
+
+            yield return player.StandByPhase();
+
             isStandByPhase = false;
         }
 
@@ -321,7 +320,7 @@ namespace ShadowCraft
 
         public void OnEndTurn()
         {
-            endOfTurn = true;
+            currentPlayer.finishedStandBy = true;
         }
 
         public void SetManaTextValues(int[] values)
