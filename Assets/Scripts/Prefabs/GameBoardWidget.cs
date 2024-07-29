@@ -69,6 +69,8 @@ namespace ShadowCraft
 
         public bool GetIsSlotEmpty(BoardSlot boardSlot) => cards[boardSlot.SlotNumber] == null;
 
+        public BoardSlot.CycleType GetCycleType(int boardSlot) => CardSlots[boardSlot].GetCycleType();
+
         #endregion
 
         #region Setters

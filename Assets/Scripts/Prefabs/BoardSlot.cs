@@ -67,6 +67,8 @@ namespace ShadowCraft
             cycleType = CycleType.Light;
         }
 
+        public CycleType GetCycleType() => cycleType;
+
         public void OnHover()
         {
             if (InputManager.shared.GetCardWidget() != null && !BattleManager.shared.CanPlaceCardInSlot(this))
