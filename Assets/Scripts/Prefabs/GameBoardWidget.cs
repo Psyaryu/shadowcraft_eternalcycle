@@ -10,6 +10,8 @@ namespace ShadowCraft
 {
     public class GameBoardWidget : MonoBehaviour
     {
+        #region Properties
+
         [SerializeField]
         public int numberOfCardSlots = 5;
 
@@ -30,12 +32,6 @@ namespace ShadowCraft
             for (int i = 0; i < CardSlots.Count; i++)
                 CardSlots[i].SlotNumber = i;
         }
-
-        //private void Start()
-        //{
-        //    for (int i = 0; i < CardSlots.Count; i++)
-        //        CardSlots[i].SlotNumber = i;
-        //}
 
         public void AddCard(CardWidget cardWidget, int slot)
         {
@@ -108,5 +104,6 @@ namespace ShadowCraft
             DeckPositions.ForEach(Slot => Handles.DrawSolidArc(Slot.position, Slot.forward, Slot.up, 360f, 1f));
         }
 #endif
+        #endregion
     }
 }
