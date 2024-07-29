@@ -49,7 +49,7 @@ MonoBehaviour:
   meshRenderer: {fileID: 4626608310665555600}
   material: {fileID: 2100000, guid: 195e39f8b540c4cdf9cd8c179413dc22, type: 2}
   DarkColor: {r: 0, g: 0, b: 0, a: 1}
-  LightColor: {r: 1, g: 1, b: 1, a: 1}
+  LightColor: {r: 0.6273585, g: 0.98555726, b: 1, a: 1}
   HoverLightColor: {r: 0, g: 1, b: 0, a: 1}
   HoverDarkColor: {r: 0.013794942, g: 0.5849056, b: 0.013794942, a: 1}
   HoverCantPlaceLightColor: {r: 1, g: 0, b: 0.03653574, a: 1}

@@ -6,8 +6,7 @@ namespace ShadowCraft
 {
     public class BoardSlot : MonoBehaviour
     {
-
-        enum CycleType
+        public enum CycleType
         {
             Light,
             Shadow
@@ -67,6 +66,8 @@ namespace ShadowCraft
             meshRenderer.material.color = LightColor;
             cycleType = CycleType.Light;
         }
+
+        public CycleType GetCycleType() => cycleType;
 
         public void OnHover()
         {

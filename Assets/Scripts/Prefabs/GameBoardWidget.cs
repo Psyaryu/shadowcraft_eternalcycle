@@ -13,7 +13,7 @@ namespace ShadowCraft
         #region Properties
 
         [SerializeField]
-        int numberOfCardSlots = 5;
+        public int numberOfCardSlots = 5;
 
         [SerializeField]
         List<BoardSlot> CardSlots = new List<BoardSlot>();
@@ -68,6 +68,20 @@ namespace ShadowCraft
         #region Getters
 
         public bool GetIsSlotEmpty(BoardSlot boardSlot) => cards[boardSlot.SlotNumber] == null;
+
+        public BoardSlot.CycleType GetCycleType(int boardSlot) => CardSlots[boardSlot].GetCycleType();
+
+        #endregion
+
+        #region Setters
+
+        public void SetCycle(BoardSlot.CycleType cycle, int boardSlot)
+        {
+            if (cycle == BoardSlot.CycleType.Light)
+                CardSlots[boardSlot].OnLight();
+            else if (cycle == BoardSlot.CycleType.Shadow)
+                CardSlots[boardSlot].OnDark();
+        }
 
         #endregion
 
