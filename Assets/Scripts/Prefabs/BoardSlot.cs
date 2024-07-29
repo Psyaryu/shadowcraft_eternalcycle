@@ -6,8 +6,7 @@ namespace ShadowCraft
 {
     public class BoardSlot : MonoBehaviour
     {
-
-        enum CycleType
+        public enum CycleType
         {
             Light,
             Shadow

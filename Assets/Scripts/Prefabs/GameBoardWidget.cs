@@ -11,7 +11,7 @@ namespace ShadowCraft
     public class GameBoardWidget : MonoBehaviour
     {
         [SerializeField]
-        int numberOfCardSlots = 5;
+        public int numberOfCardSlots = 5;
 
         [SerializeField]
         List<BoardSlot> CardSlots = new List<BoardSlot>();
@@ -58,6 +58,27 @@ namespace ShadowCraft
             cards[slot] = null;
         }
 
+        #endregion
+
+        #region Getters
+
+        public bool GetIsSlotEmpty(BoardSlot boardSlot) => cards[boardSlot.SlotNumber] == null;
+
+        #endregion
+
+        #region Setters
+
+        public void SetCycle(BoardSlot.CycleType cycle, int boardSlot)
+        {
+            if (cycle == BoardSlot.CycleType.Light)
+                CardSlots[boardSlot].OnLight();
+            else if (cycle == BoardSlot.CycleType.Shadow)
+                CardSlots[boardSlot].OnDark();
+        }
+
+        #endregion
+
+        #region Editor
 #if UNITY_EDITOR
         private void OnValidate()
         {
