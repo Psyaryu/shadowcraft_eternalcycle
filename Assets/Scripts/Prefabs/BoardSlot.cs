@@ -33,6 +33,12 @@ namespace ShadowCraft
         private Color HoverDarkColor = Color.green;
 
         [SerializeField]
+        private Color HoverCantPlaceLightColor = Color.green;
+
+        [SerializeField]
+        private Color HoverCantPlaceDarkColor = Color.green;
+
+        [SerializeField]
         private Color HoverFilledLightColor = Color.green;
 
         [SerializeField]
@@ -63,7 +69,11 @@ namespace ShadowCraft
 
         public void OnHover()
         {
-            Debug.Log($"Board Slot Hover: {SlotNumber}");
+            if (InputManager.shared.GetCardWidget() != null && !BattleManager.shared.CanPlaceCardInSlot(this))
+            {
+                meshRenderer.material.color = cycleType == CycleType.Light ? HoverCantPlaceLightColor : HoverCantPlaceDarkColor;
+                return;
+            }
 
             if (card == null)
                 meshRenderer.material.color = cycleType == CycleType.Light ? HoverLightColor : HoverDarkColor;
@@ -73,8 +83,6 @@ namespace ShadowCraft
 
         public void OnHoverExit()
         {
-            Debug.Log($"Board Slot Hover Exit: {SlotNumber}");
-
             meshRenderer.material.color = cycleType == CycleType.Light ? LightColor : DarkColor;
         }
     }

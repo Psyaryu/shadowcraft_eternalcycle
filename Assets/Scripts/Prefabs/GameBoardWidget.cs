@@ -26,6 +26,10 @@ namespace ShadowCraft
 
         CardWidget[] cards = null;
 
+        #endregion
+
+        #region Unity Methods
+
         private void Awake()
         {
             cards = new CardWidget[CardSlots.Count];
@@ -33,13 +37,18 @@ namespace ShadowCraft
                 CardSlots[i].SlotNumber = i;
         }
 
-        public void AddCard(CardWidget cardWidget, int slot)
+        #endregion
+
+        #region Card Functions
+        
+        public void AddCard(CardWidget cardWidget, BoardSlot boardSlot)
         {
-            if (slot >= CardSlots.Count)
+            if (boardSlot.SlotNumber >= CardSlots.Count)
                 return;
 
-            cardWidget.transform.position = CardSlots[slot].transform.position;
-            cards[slot] = cardWidget;
+            cardWidget.transform.parent = boardSlot.transform;
+            cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
+            cards[boardSlot.SlotNumber] = cardWidget;
         }
 
         public void MoveCard(int fromSlot, int toSlot)

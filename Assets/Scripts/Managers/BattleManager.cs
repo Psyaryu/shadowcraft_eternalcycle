@@ -1,13 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static ShadowCraft.Card;
 
 namespace ShadowCraft
 {
     public class BattleManager : MonoBehaviour
     {
         #region Properties
+        //Index Identifiers for ManaTypes
+        int light1 = 0;
+        int light2 = 1;
+        int neut1 = 2;
+        int neut2 = 3;
+        int dark1 = 4;
+        int dark2 = 5;
+
+        int[] elementalMastery = { 0, 0, 0, 0, 0, 0 };
+
+        int[] playerMana = { 0, 0, 0, 0, 0, 0 };
+
+        public static BattleManager shared = null;
 
         [SerializeField]
         CardWidget cardPrefab = null;
@@ -18,11 +34,15 @@ namespace ShadowCraft
         [SerializeField]
         int startingHand = 5;
 
+        [SerializeField]
+        GameBoardWidget gameBoardWidget = null;
+
         bool battleRunning = true;
-        bool endOfTurn = false;
+        bool isStandByPhase = false;
 
         Player player = null;
         Player opponent = null;
+        Player currentPlayer = null;
 
         List<CardWidget> hand = new List<CardWidget>();
         List<CardWidget> field = new List<CardWidget>();
@@ -47,6 +67,7 @@ namespace ShadowCraft
         {
             player = GameManager.shared.player;
             opponent = GameManager.shared.ai;
+            shared = this;
         }
 
         private void Start()
@@ -67,6 +88,7 @@ namespace ShadowCraft
         private void OnDisable()
         {
             StopAllCoroutines();
+            shared = null;
         }
 
         #endregion
@@ -84,11 +106,16 @@ namespace ShadowCraft
                 yield return StartOfRound();
 
                 foreach (var character in characters)
-                {
+                { 
+                    currentPlayer = character;
                     yield return StartOfTurn(character);
                     yield return DrawPhase(character);
                     yield return StandbyPhase(character);
                     yield return BattlePhase(character);
+
+                    if (GetOtherCharacter(character).IsDead())
+                        break;
+
                     yield return EndOfTurn(character);
                 }
             }
@@ -118,7 +145,11 @@ namespace ShadowCraft
         IEnumerator StartOfTurn(Player player)
         {
             Debug.Log($"{player.character.Name} Start of Turn");
-            endOfTurn = false;
+            playerMana = ProduceMana(playerMana, player.manaProductionRate);
+            SetManaTextValues(playerMana);
+
+            player.finishedStandBy = false;
+
             yield return null;
         }
 
@@ -130,8 +161,51 @@ namespace ShadowCraft
                 yield break;
 
             Debug.Log($"{player.character.Name} Draw");
-            Instantiate(cardPrefab, handParent);
+            var cardWidget = Instantiate(cardPrefab, handParent);
+            cardWidget.card = card;
 
+            PositionHandCards();
+        }
+
+        IEnumerator StandbyPhase(Player player)
+        {
+            isStandByPhase = true;
+            Debug.Log($"{player.character.Name} Stand By");
+
+            yield return player.StandByPhase();
+
+            isStandByPhase = false;
+        }
+
+        IEnumerator BattlePhase(Player player)
+        {
+            Debug.Log($"{player.character.Name} Battle");
+            var otherCharacter = GetOtherCharacter(player);
+
+            player.field.ForEach(Card => otherCharacter.Attack(Card));
+
+            yield return null;
+        }
+
+        IEnumerator EndOfTurn(Player player)
+        {
+            Debug.Log($"{player.character.Name} End of Turn");
+            yield return null;
+        }
+
+        IEnumerator EndOfBattle()
+        {
+            Debug.Log("End of Battle");
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            yield return null;
+        }
+
+        #endregion
+
+        #region Battle Utilities
+
+        public void PositionHandCards()
+        {
             var maxWidth = 11f; // board is 15, so 10 + card buffer
             var sectionWidth = 2.5f; // card size
             var totalCards = Mathf.Floor(maxWidth / sectionWidth) + 1;
@@ -152,42 +226,107 @@ namespace ShadowCraft
             }
         }
 
-        IEnumerator StandbyPhase(Player player)
+        public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
         {
-            Debug.Log($"{player.character.Name} Stand By");
-            while (!endOfTurn)
+            var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+            int[] mastery = CanAffordMana(playerMana, cardWidget.card.manaCost);
+
+            if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard || mastery == null)
             {
-                yield return null;
+                PositionHandCards();
+                cardWidget.isPlaced = false;
+                return;
             }
+            playerMana = SubtractMana(mastery, playerMana);
+            SetManaTextValues(playerMana);
+            elementalMastery = UpdateElementalMastery(elementalMastery, cardWidget.card.cardType);
+            gameBoardWidget.AddCard(cardWidget, boardSlot);
+            currentPlayer.PlayCard(cardWidget.card);
+        }
+        public int[] CanAffordMana(int[] playerMana, int[] manaCost)
+        {
+            int[] masteryCost;
+
+            masteryCost = SubtractMana(elementalMastery, manaCost);
+
+            for(int i = 0; i < playerMana.Length; i++)
+            {
+                if (playerMana[i] < manaCost[i])
+                {
+                    return null;
+                }
+            }
+
+            return masteryCost;
         }
 
-        IEnumerator BattlePhase(Player player)
+        public int[] SubtractMana(int[] elementalMastery, int[] manaCost)
         {
-            Debug.Log($"{player.character.Name} Battle");
-            var otherCharacter = GetOtherCharacter(player);
-            yield return null;
+            int[] remainingCost = manaCost.Zip(elementalMastery, (a, b) => a - b).ToArray();
+
+            for (int i = 0; i < playerMana.Length; i++)
+            {
+                if (remainingCost[i] < 0)
+                {
+                    remainingCost[1] = 0; ;
+                }
+            }
+
+            return remainingCost;
         }
 
-        IEnumerator EndOfTurn(Player player)
+        public bool CanPlaceCardInSlot(BoardSlot boardSlot)
         {
-            Debug.Log($"{player.character.Name} End of Turn");
-            yield return null;
+            var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+            return canPlaceCard;
         }
 
-        IEnumerator EndOfBattle()
+        public int[] ProduceMana(int[] increaseAmounts, int[] playerMana)
         {
-            Debug.Log("End of Battle");
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-            yield return null;
+            int[] newMana = increaseAmounts.Zip(playerMana, (a, b) => a + b).ToArray();
+            return newMana;
+        }
+
+        public int[] UpdateElementalMastery(int[] mastery, ManaTypes cardType)
+        {
+
+            switch(cardType.ToString())
+            {
+                case "light1":
+                    mastery[light1]++;
+                    break;
+                case "light2":
+                    mastery[light2]++;
+                    break;
+                case "neut1":
+                    mastery[neut1]++;
+                    break;
+                case "neut2":
+                    mastery[neut2]++;
+                    break;
+                case "dark1":
+                    mastery[dark1]++;
+                    break;
+                case "dark2":
+                    mastery[dark2]++;
+                    break;
+            }
+
+            return mastery;
         }
 
         #endregion
 
         #region Getters
 
-        private bool GetBattleIsRunning() => battleRunning;
+        private bool GetBattleIsRunning()
+        {
+            return !player.IsDead() && !opponent.IsDead() && battleRunning;
+        }
 
         private Player GetOtherCharacter(Player battlePlayer) => battlePlayer == player ? opponent : player;
+
+        public bool GetIsStandByPhase() => isStandByPhase;
 
         #endregion
 
@@ -201,7 +340,17 @@ namespace ShadowCraft
 
         public void OnEndTurn()
         {
-            endOfTurn = true;
+            currentPlayer.finishedStandBy = true;
+        }
+
+        public void SetManaTextValues(int[] values)
+        {
+            light1Text.text = "Light1: " + values[light1].ToString();
+            light2Text.text = "Light2: " + values[light2].ToString();
+            neut1Text.text = "neut1: " + values[neut1].ToString();
+            neut2Text.text = "neut2: " + values[neut2].ToString();
+            dark1Text.text = "dark1: " + values[dark1].ToString();
+            dark2Text.text = "dark2: " + values[dark2].ToString();
         }
 
         #endregion
