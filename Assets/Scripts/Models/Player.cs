@@ -17,6 +17,9 @@ namespace ShadowCraft
         List<Card> graveyard = new List<Card>();
         public int[] manaProductionRate = { 0, 0, 0, 0, 0, 0 };
 
+        public bool finishedStandBy = false;
+
+
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
@@ -57,6 +60,14 @@ namespace ShadowCraft
             deck.RemoveAt(0);
 
             return card;
+        }
+
+        virtual public IEnumerator StandByPhase()
+        {
+            while (!finishedStandBy)
+            {
+                yield return null;
+            }
         }
 
         public void PlayCard(Card card)

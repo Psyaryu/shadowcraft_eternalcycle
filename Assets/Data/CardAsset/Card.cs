@@ -71,11 +71,6 @@ namespace ShadowCraft
             }
 
             return null;
-
         }
-
-
-        // TODO: Figure out the Board Passives
-        // TODO: Figure out the dark/light augmentations
     }
 }

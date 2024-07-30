@@ -11,6 +11,7 @@ namespace ShadowCraft
         private void Start()
         {
             // TODO: Play the audio clip here.
+            AudioManager.Instance.PlayAudio(audioClip, "Background");
         }
 
         public void OnBattle()

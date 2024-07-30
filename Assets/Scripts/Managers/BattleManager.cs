@@ -42,7 +42,6 @@ namespace ShadowCraft
         GameBoardWidget gameBoardWidget = null;
 
         bool battleRunning = true;
-        bool endOfTurn = false;
         bool isStandByPhase = false;
         bool playerTurn = true;
 
@@ -61,9 +60,9 @@ namespace ShadowCraft
         private TMP_Text dark1Text = null;
         private TMP_Text dark2Text = null;
 
-        
+        private List<BoardSlot.CycleType> lightDarkCycle = new List<BoardSlot.CycleType>();
 
-
+        private int cycleIndexStart = 1;
 
         #endregion
 
@@ -78,6 +77,9 @@ namespace ShadowCraft
 
         private void Start()
         {
+            lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Light, gameBoardWidget.numberOfCardSlots));
+            lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Shadow, gameBoardWidget.numberOfCardSlots));
+
             light1Text = manaTextParent.transform.Find("Light1").GetComponent<TMP_Text>();
             light2Text = manaTextParent.transform.Find("Light2").GetComponent<TMP_Text>();
             neut1Text = manaTextParent.transform.Find("Neut1").GetComponent<TMP_Text>();
@@ -106,6 +108,8 @@ namespace ShadowCraft
 
             while (GetBattleIsRunning())
             {
+                yield return StartOfRound();
+
                 foreach (var character in characters)
                 { 
                     currentPlayer = character;
@@ -130,13 +134,27 @@ namespace ShadowCraft
             yield return null;
         }
 
+        IEnumerator StartOfRound()
+        {
+            cycleIndexStart = ((cycleIndexStart - 1) + lightDarkCycle.Count) % lightDarkCycle.Count;
+
+            for (int i = 0; i < gameBoardWidget.numberOfCardSlots * 2; i++)
+            {
+                var cycleIndex = (cycleIndexStart + i % gameBoardWidget.numberOfCardSlots) % lightDarkCycle.Count;
+                gameBoardWidget.SetCycle(lightDarkCycle[cycleIndex], i);
+            }
+
+            yield return null;
+        }
+
         IEnumerator StartOfTurn(Player player)
         {
             Debug.Log($"{player.character.Name} Start of Turn");
             playerMana = ProduceMana(playerMana, player.manaProductionRate);
             SetManaTextValues(playerMana);
 
-            endOfTurn = false;
+            player.finishedStandBy = false;
+
             yield return null;
         }
 
@@ -158,10 +176,9 @@ namespace ShadowCraft
         {
             isStandByPhase = true;
             Debug.Log($"{player.character.Name} Stand By");
-            while (!endOfTurn)
-            {
-                yield return null;
-            }
+
+            yield return player.StandByPhase();
+
             isStandByPhase = false;
         }
 
@@ -362,7 +379,7 @@ namespace ShadowCraft
 
         public void OnEndTurn()
         {
-            endOfTurn = true;
+            currentPlayer.finishedStandBy = true;
         }
 
         public void SetManaTextValues(int[] values)
