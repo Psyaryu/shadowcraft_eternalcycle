@@ -11,7 +11,7 @@ public class TestCard : MonoBehaviour
     int health = 2;
     int attack = 2;
     string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "dark1", true);
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
     string cardName = "TestCard";
 
     #region Effects

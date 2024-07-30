@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ShadowCraft.Card;
@@ -14,16 +15,13 @@ namespace ShadowCraft
     {
         #region Properties
         //Index Identifiers for ManaTypes
-        int light1 = 0;
-        int light2 = 1;
-        int neut1 = 2;
-        int neut2 = 3;
-        int dark1 = 4;
-        int dark2 = 5;
+        int light = 0;
+        int fire = 1;
+        int water = 2;
+        int nature = 3;
+        int shadow = 4;
+        int death = 5;
 
-        int[] elementalMastery = { 0, 0, 0, 0, 0, 0 };
-
-        int[] playerMana = { 0, 0, 0, 0, 0, 0 };
 
         public static BattleManager shared = null;
 
@@ -36,6 +34,15 @@ namespace ShadowCraft
         Transform handParent = null;
 
         [SerializeField]
+        public Transform handParentEnemy = null;
+
+        [SerializeField]
+        public Transform PlayerGraveyard = null;
+
+        [SerializeField]
+        public Transform OpponentGraveyard = null;
+
+        [SerializeField]
         int startingHand = 5;
 
         [SerializeField]
@@ -45,20 +52,21 @@ namespace ShadowCraft
         bool isStandByPhase = false;
         bool playerTurn = true;
 
-        Player player = null;
-        Player opponent = null;
+        public Player player = null;
+        public AIPlayer opponent = null;
+        public CharacterAsset opponentCharacter = null;
         Player currentPlayer = null;
 
         List<CardWidget> hand = new List<CardWidget>();
         List<CardWidget> field = new List<CardWidget>();
 
         public GameObject manaTextParent = null;
-        private TMP_Text light1Text = null;
-        private TMP_Text light2Text = null;
-        private TMP_Text neut1Text = null;
-        private TMP_Text neut2Text = null;
-        private TMP_Text dark1Text = null;
-        private TMP_Text dark2Text = null;
+        private TMP_Text lightText = null;
+        private TMP_Text fireText = null;
+        private TMP_Text waterText = null;
+        private TMP_Text natureText = null;
+        private TMP_Text shadowText = null;
+        private TMP_Text deathText = null;
 
         private List<BoardSlot.CycleType> lightDarkCycle = new List<BoardSlot.CycleType>();
 
@@ -70,8 +78,9 @@ namespace ShadowCraft
 
         private void Awake()
         {
+
             player = GameManager.shared.player;
-            opponent = GameManager.shared.ai;
+            opponent = new AIPlayer(opponentCharacter);
             shared = this;
         }
 
@@ -80,12 +89,12 @@ namespace ShadowCraft
             lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Light, gameBoardWidget.numberOfCardSlots));
             lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Shadow, gameBoardWidget.numberOfCardSlots));
 
-            light1Text = manaTextParent.transform.Find("Light1").GetComponent<TMP_Text>();
-            light2Text = manaTextParent.transform.Find("Light2").GetComponent<TMP_Text>();
-            neut1Text = manaTextParent.transform.Find("Neut1").GetComponent<TMP_Text>();
-            neut2Text = manaTextParent.transform.Find("Neut2").GetComponent<TMP_Text>();
-            dark1Text = manaTextParent.transform.Find("Dark1").GetComponent<TMP_Text>();
-            dark2Text = manaTextParent.transform.Find("Dark2").GetComponent<TMP_Text>();
+            lightText = manaTextParent.transform.Find("light").GetComponent<TMP_Text>();
+            fireText = manaTextParent.transform.Find("fire").GetComponent<TMP_Text>();
+            waterText = manaTextParent.transform.Find("water").GetComponent<TMP_Text>();
+            natureText = manaTextParent.transform.Find("nature").GetComponent<TMP_Text>();
+            shadowText = manaTextParent.transform.Find("shadow").GetComponent<TMP_Text>();
+            deathText = manaTextParent.transform.Find("death").GetComponent<TMP_Text>();
 
             StartCoroutine(MainBattleSequence());
         }
@@ -131,6 +140,7 @@ namespace ShadowCraft
         IEnumerator StartOfBattle()
         {
             Debug.Log("Start of Battle");
+           // opponent.SetDeck();
             yield return null;
         }
 
@@ -150,8 +160,9 @@ namespace ShadowCraft
         IEnumerator StartOfTurn(Player player)
         {
             Debug.Log($"{player.character.Name} Start of Turn");
-            playerMana = ProduceMana(playerMana, player.manaProductionRate);
-            SetManaTextValues(playerMana);
+            player.currentMana = ProduceMana(player.manaProductionRate, player);
+            if(player != opponent)
+            SetManaTextValues(player.currentMana);
 
             player.finishedStandBy = false;
 
@@ -160,16 +171,24 @@ namespace ShadowCraft
 
         IEnumerator DrawPhase(Player player)
         {
-            var card = player.Draw();
+            var card = player.Draw().card;
 
             if (card == null)
                 yield break;
 
             Debug.Log($"{player.character.Name} Draw");
-            var cardWidget = Instantiate(cardPrefab, handParent);
-            cardWidget.card = card;
-
-            PositionHandCards();
+            if (player != opponent)
+            {
+                var cardWidget = Instantiate(cardPrefab, handParent);
+                cardWidget.card = card;
+                PositionHandCards();
+            }
+            else
+            {
+                var cardWidget = Instantiate(cardPrefab, handParentEnemy);
+                cardWidget.card = card;
+              
+            }
         }
 
         IEnumerator StandbyPhase(Player player)
@@ -185,9 +204,46 @@ namespace ShadowCraft
         IEnumerator BattlePhase(Player player)
         {
             Debug.Log($"{player.character.Name} Battle");
+
+
             var otherCharacter = GetOtherCharacter(player);
 
-            player.field.ForEach(Card => otherCharacter.Attack(Card));
+            foreach (var card in player.field)
+            {
+                int slot = card.card.boardSlot;
+                int Oppositeslot = (slot + 5) % 10;
+                CardWidget oppositeCard;
+
+                if (gameBoardWidget.cards[Oppositeslot] != null)
+                {
+                    oppositeCard = gameBoardWidget.cards[Oppositeslot];
+                }
+                else
+                {
+                    oppositeCard = null;
+                }
+                
+
+                if(oppositeCard != null)
+                {
+                    oppositeCard.card.health -= card.card.attack;
+
+                    if (oppositeCard.card.health <= 0)
+                    {
+                        //TODO: remove card from widget
+                        RemoveCardFromBoardSlot(gameBoardWidget.cards[Oppositeslot]);
+
+                        otherCharacter.SendToGraveYard(oppositeCard);
+                        int extraDamage = math.abs(oppositeCard.card.health);
+                        otherCharacter.TakeDamage(extraDamage);
+
+                    }
+                }
+                else
+                {
+                    otherCharacter.TakeDamage(card.card.attack);
+                }
+            }
 
             yield return null;
         }
@@ -255,30 +311,40 @@ namespace ShadowCraft
             }
         }
 
-        public void AddCardToBoardSlot(Card card, BoardSlot boardSlot)
+        public void AddCardToBoardSlot(Card card, BoardSlot boardSlot, Player player)
         {
-            var cardWidget = Instantiate(cardPrefab, handParent);
+            CardWidget cardWidget = null;
+            if (currentPlayer != opponent)
+            {
+                cardWidget = Instantiate(cardPrefab, handParent);
+            }
+            else
+            {
+                cardWidget = Instantiate(cardPrefab, handParentEnemy);
+            }
             cardWidget.card = card;
 
-            AddCardToBoardSlot(cardWidget, boardSlot);
+            AddCardToBoardSlot(cardWidget, boardSlot, player);
         }
 
-        public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
+        public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot, Player currentplayer)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
-            int[] mastery = CanAffordMana(playerMana, cardWidget.card.manaCost);
+            int[] mastery = CanAffordMana(player, cardWidget.card.manaCost);
 
             if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard || mastery == null)
             {
+                if(currentplayer != opponent)
                 PositionHandCards();
                 cardWidget.isPlaced = false;
                 return;
             }
-            playerMana = SubtractMana(mastery, playerMana);
-            SetManaTextValues(playerMana);
-            elementalMastery = UpdateElementalMastery(elementalMastery, cardWidget.card.cardType);
+            currentplayer.currentMana = SubtractMana(mastery, currentplayer.currentMana);
+            if(currentPlayer != opponent)
+            SetManaTextValues(player.currentMana);
+            currentplayer.elementalMastery = UpdateElementalMastery(currentplayer, cardWidget.card.cardType);
             gameBoardWidget.AddCard(cardWidget, boardSlot);
-            currentPlayer.PlayCard(cardWidget.card);
+            currentPlayer.PlayCard(cardWidget);
 
             Type type = Type.GetType(cardWidget.card.cardName);
 
@@ -290,15 +356,34 @@ namespace ShadowCraft
             effectMethod.Invoke(scriptInstance, null);
 
         }
-        public int[] CanAffordMana(int[] playerMana, int[] manaCost)
+        public void RemoveCardFromBoardSlot(CardWidget cardWidget)
+        {
+            if(currentPlayer != opponent)
+            gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, PlayerGraveyard);
+            else
+            gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, OpponentGraveyard);
+            currentPlayer.RemovCard(cardWidget);
+            /*
+            Type type = Type.GetType(card.card.cardName);
+
+            GameObject newObject = new GameObject("ScriptInstanceObject");
+            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+            MethodInfo effectMethod = type.GetMethod("EffectDead");
+
+            effectMethod.Invoke(scriptInstance, null);
+            */
+
+        }
+        public int[] CanAffordMana(Player player, int[] manaCost)
         {
             int[] masteryCost;
 
-            masteryCost = SubtractMana(elementalMastery, manaCost);
+            masteryCost = SubtractMana(player.elementalMastery, manaCost);
 
-            for(int i = 0; i < playerMana.Length; i++)
+            for(int i = 0; i < player.currentMana.Length; i++)
             {
-                if (playerMana[i] < manaCost[i])
+                if (player.currentMana[i] < manaCost[i])
                 {
                     return null;
                 }
@@ -311,7 +396,7 @@ namespace ShadowCraft
         {
             int[] remainingCost = manaCost.Zip(elementalMastery, (a, b) => a - b).ToArray();
 
-            for (int i = 0; i < playerMana.Length; i++)
+            for (int i = 0; i < manaCost.Length; i++)
             {
                 if (remainingCost[i] < 0)
                 {
@@ -325,38 +410,39 @@ namespace ShadowCraft
         public bool CanPlaceCardInSlot(BoardSlot boardSlot)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
-            canPlaceCard = canPlaceCard && boardSlot.GetIsFilled();
+            canPlaceCard = canPlaceCard && !boardSlot.GetIsFilled();
             return canPlaceCard;
         }
 
-        public int[] ProduceMana(int[] increaseAmounts, int[] playerMana)
+        public int[] ProduceMana(int[] increaseAmounts, Player player)
         {
-            int[] newMana = increaseAmounts.Zip(playerMana, (a, b) => a + b).ToArray();
+            int[] newMana = increaseAmounts.Zip(player.currentMana, (a, b) => a + b).ToArray();
             return newMana;
         }
 
-        public int[] UpdateElementalMastery(int[] mastery, ManaTypes cardType)
+        public int[] UpdateElementalMastery(Player player, ManaTypes cardType)
         {
+            int[] mastery = player.elementalMastery;
 
             switch(cardType.ToString())
             {
-                case "light1":
-                    mastery[light1]++;
+                case "light":
+                    mastery[light]++;
                     break;
-                case "light2":
-                    mastery[light2]++;
+                case "fire":
+                    mastery[fire]++;
                     break;
-                case "neut1":
-                    mastery[neut1]++;
+                case "water":
+                    mastery[water]++;
                     break;
-                case "neut2":
-                    mastery[neut2]++;
+                case "nature":
+                    mastery[nature]++;
                     break;
-                case "dark1":
-                    mastery[dark1]++;
+                case "shadow":
+                    mastery[shadow]++;
                     break;
-                case "dark2":
-                    mastery[dark2]++;
+                case "death":
+                    mastery[death]++;
                     break;
             }
 
@@ -395,12 +481,12 @@ namespace ShadowCraft
 
         public void SetManaTextValues(int[] values)
         {
-            light1Text.text = "Light1: " + values[light1].ToString();
-            light2Text.text = "Light2: " + values[light2].ToString();
-            neut1Text.text = "neut1: " + values[neut1].ToString();
-            neut2Text.text = "neut2: " + values[neut2].ToString();
-            dark1Text.text = "dark1: " + values[dark1].ToString();
-            dark2Text.text = "dark2: " + values[dark2].ToString();
+            lightText.text = "light: " + values[light].ToString();
+            fireText.text = "fire: " + values[fire].ToString();
+            waterText.text = "water: " + values[water].ToString();
+            natureText.text = "nature: " + values[nature].ToString();
+            shadowText.text = "shadow: " + values[shadow].ToString();
+            deathText.text = "death: " + values[death].ToString();
         }
 
         #endregion

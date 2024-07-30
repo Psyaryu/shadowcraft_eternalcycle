@@ -46,9 +46,9 @@ namespace ShadowCraft
 
         private CycleType cycleType = CycleType.Light;
 
-        private Card card = null;
+        private CardWidget card = null;
 
-        public void SetCard(Card card) => this.card = card;
+        public void SetCard(CardWidget card) => this.card = card;
 
         private void Awake()
         {

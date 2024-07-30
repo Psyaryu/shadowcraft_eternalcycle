@@ -15,7 +15,7 @@ namespace ShadowCraft
         CharacterAsset opponentCharacter = null;
 
         public Player player = null;
-        public Player ai = null;
+        public AIPlayer ai = null;
 
         private void Awake()
         {
@@ -27,7 +27,8 @@ namespace ShadowCraft
             DontDestroyOnLoad(shared);
 
             player = new Player(playerCharacter);
-            ai = new AIPlayer(opponentCharacter);
+            
+            
         }
     }
 }

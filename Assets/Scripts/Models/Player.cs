@@ -10,39 +10,57 @@ namespace ShadowCraft
 
         int health = -1;
 
-        protected List<Card> deck = new List<Card>();
-        protected List<Card> hand = new List<Card>();
-        public List<Card> field = new List<Card>();
-        protected List<Card> graveyard = new List<Card>();
+        protected List<CardWidget> deck = new List<CardWidget>();
+        protected List<CardWidget> hand = new List<CardWidget>();
+        public List<CardWidget> field = new List<CardWidget>();
+        public List<CardWidget> graveyard = new List<CardWidget>();
 
         public int[] manaProductionRate = { 0, 0, 0, 0, 0, 0 };
+        public int[] currentMana = { 0, 0, 0, 0, 0, 0 };
+        public int[] elementalMastery = { 0, 0, 0, 0, 0, 0 };
+
+        string playerClass = null;
 
         public bool finishedStandBy = false;
+        public int identity = 1;
 
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
             manaProductionRate = SetProductionRate();
-
+            if (this.identity == 1)
             SetDeck();
             health = character.health;
         }
-
-        virtual protected void SetDeck()
+        
+        
+        virtual public void SetDeck()
         {
+            
             StartingDecksManager.shared.SetBasePlayerDeck(this);
         }
 
+
         public int[] SetProductionRate()
         {
+
+            switch (playerClass)
+            {
+                case "Fire":
+                    int[] rate = { 1,1,1,1,1,1};
+                    return rate;
+                    
+
+            }
             //TODO: Add statment to set production rate dependant on class?
-            int[] rate = { 1, 1, 1, 1, 1, 1 };
-            return rate;
+       
+            int[] defaultrate = { 0,0,0,0,0,0};
+            return defaultrate;
         }
 
         virtual public void AddToDeck(string cardType)
         {
-            Card newCard = Card.CreateCard(cardType);
+            CardWidget newCard = Card.CreateCard(cardType);
             
             if(newCard != null)
             {
@@ -50,10 +68,13 @@ namespace ShadowCraft
             }
         }
 
-        virtual public Card Draw()
+        virtual public CardWidget Draw()
         {
             if (deck.Count == 0)
-                return null; // TODO: Reshuffle the deck?
+            {
+                ShuffleGraveYard();
+            }
+                
 
             var card = deck[0];
 
@@ -71,21 +92,28 @@ namespace ShadowCraft
             }
         }
 
-        public void PlayCard(Card card)
+        public void PlayCard(CardWidget cardWidget)
         {
-            field.Add(card);
-            hand.Remove(card);
+            field.Add(cardWidget);
+            hand.Remove(cardWidget);
         }
 
-        public void SendToGraveYard(Card card)
+        public void RemovCard(CardWidget cardWidget)
         {
-            graveyard.Add(card);
-            field.Remove(card);
+            field.Remove(cardWidget);
+        }
+
+        public void SendToGraveYard(CardWidget cardWidget)
+        {
+            graveyard.Add(cardWidget);
+            field.Remove(cardWidget);
+
+
         }
 
         public void ShuffleDeck()
         {
-            var shuffledDeck = new List<Card>();
+            var shuffledDeck = new List<CardWidget>();
 
             for (int i = 0; i < deck.Count; i++)
             {
@@ -101,20 +129,25 @@ namespace ShadowCraft
         {
             deck.AddRange(graveyard);
             ShuffleDeck();
+
+            foreach (var card in graveyard)
+            {
+                graveyard.Remove(card);
+            }
         }
 
         public void ShuffleHand()
         {
-            deck.AddRange(hand);
+            graveyard.AddRange(hand);
             ShuffleDeck();
         }
 
-        public void Attack(Card card)
+        public void TakeDamage(int damage)
         {
             // TODO: Determine if we need to attack the player directly or one of the cards on the field
-            health -= card.attack;
+            health -= damage;
 
-            Debug.Log($"{character.Name} took {card.attack} damage");
+            Debug.Log($"{character.Name} took {damage} damage");
         }
 
         public bool IsDead() => health <= 0;
