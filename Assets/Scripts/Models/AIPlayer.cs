@@ -6,9 +6,14 @@ namespace ShadowCraft
 {
     public class AIPlayer : Player
     {
-        public static AIPlayer share = null;
         public AIPlayer(CharacterAsset characterAsset) : base(characterAsset)
         {
+
+        }
+
+        protected override void SetDeck()
+        {
+            StartingDecksManager.shared.SetBaseEnemyDeck(this);
         }
 
         public override Card Draw()
@@ -19,8 +24,22 @@ namespace ShadowCraft
 
         public override IEnumerator StandByPhase()
         {
-            // TODO: Tell the BattleManager what cards to add
-            // BattleManager.shared.AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
+            var gameBoard = BattleManager.shared.GetGameBoard();
+            var boardSlots = gameBoard.GetOpponentBoardSlots();
+
+            foreach (var card in hand)
+            {
+                foreach (var boardSlot in boardSlots)
+                {
+                    if (!BattleManager.shared.CanPlaceCardInSlot(boardSlot))
+                        continue;
+
+                    BattleManager.shared.AddCardToBoardSlot(card, boardSlot);
+
+                    if (boardSlot.GetIsFilled())
+                        break;
+                }                
+            }
 
             yield return null;
         }

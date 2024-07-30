@@ -7,29 +7,30 @@ namespace ShadowCraft
     public class Player
     {
         public CharacterAsset character = null;
-        public static Player shared = null;
 
         int health = -1;
 
-        List<Card> deck = new List<Card>();
-        List<Card> hand = new List<Card>();
+        protected List<Card> deck = new List<Card>();
+        protected List<Card> hand = new List<Card>();
         public List<Card> field = new List<Card>();
-        List<Card> graveyard = new List<Card>();
+        protected List<Card> graveyard = new List<Card>();
+
         public int[] manaProductionRate = { 0, 0, 0, 0, 0, 0 };
 
         public bool finishedStandBy = false;
 
-
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
-            AddToDeck("TestCard");
-            AddToDeck("TestCard");
-            AddToDeck("TestCard");
-            AddToDeck("TestCard");
-            AddToDeck("TestCard");
             manaProductionRate = SetProductionRate();
+
+            SetDeck();
             health = character.health;
+        }
+
+        virtual protected void SetDeck()
+        {
+            StartingDecksManager.shared.SetBasePlayerDeck(this);
         }
 
         public int[] SetProductionRate()

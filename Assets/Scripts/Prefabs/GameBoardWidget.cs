@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +51,7 @@ namespace ShadowCraft
             cardWidget.transform.parent = boardSlot.transform;
             cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
             cards[boardSlot.SlotNumber] = cardWidget;
+            boardSlot.SetCard(cardWidget.card);
         }
 
         public void MoveCard(int fromSlot, int toSlot)
@@ -70,6 +73,12 @@ namespace ShadowCraft
         public bool GetIsSlotEmpty(BoardSlot boardSlot) => cards[boardSlot.SlotNumber] == null;
 
         public BoardSlot.CycleType GetCycleType(int boardSlot) => CardSlots[boardSlot].GetCycleType();
+
+        public List<BoardSlot> GetOpponentBoardSlots()
+        {
+            var opponentBoardSlots = CardSlots.Skip(numberOfCardSlots).ToList();
+            return opponentBoardSlots;
+        }
 
         #endregion
 

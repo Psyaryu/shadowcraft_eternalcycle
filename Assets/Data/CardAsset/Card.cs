@@ -5,14 +5,17 @@ using UnityEngine;
 
 namespace ShadowCraft
 {
-    [CreateAssetMenu(fileName = "New Card", menuName = "ShadowCraft/New Card")]
-
     public class Card : ScriptableObject
     {
         public enum Cards
         {
             TestCard,
-            SoldierofDark
+            SoldierofDark,
+            SoldierofLight,
+            SoldierofShadows,
+            SoldierofRain,
+            SoldierofNature,
+            SoldierofFlames,
         }
         public enum ManaTypes
         {
