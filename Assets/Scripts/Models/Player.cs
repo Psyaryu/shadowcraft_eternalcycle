@@ -7,6 +7,7 @@ namespace ShadowCraft
     public class Player
     {
         public CharacterAsset character = null;
+        public static Player shared = null;
 
         int health = -1;
 

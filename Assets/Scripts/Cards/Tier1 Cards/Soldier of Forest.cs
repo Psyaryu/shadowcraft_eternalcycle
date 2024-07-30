@@ -5,14 +5,14 @@ using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
 
-public class TestCard : MonoBehaviour
+public class SoldierofForest : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
-    int health = 2;
-    int attack = 2;
-    string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "dark1", true);
-    string cardName = "TestCard";
+    int[] ManaCost = { 0, 0, 1, 0, 1, 0 };
+    int health = 1;
+    int attack = 1;
+    string description = "Basic card for nature";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
+    string cardName = "SoldierofForest";
 
     #region Effects
 
@@ -21,15 +21,7 @@ public class TestCard : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<Card> effectedCards = new List<Card>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
-
-        effectedCards = BattleManager.shared.effectedCards;
-
-        for (int i = 0; i < effectedCards.Count; i++)
-        {
-            effectedCards[i].health++; 
-        }
+     
         
     }
 

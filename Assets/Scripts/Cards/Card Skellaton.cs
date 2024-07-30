@@ -5,14 +5,14 @@ using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
 
-public class TestCard : MonoBehaviour
+public class CardSkellaton : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
-    int health = 2;
-    int attack = 2;
-    string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "dark1", true);
-    string cardName = "TestCard";
+    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int health = 0;
+    int attack = 0;
+    string description = "";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "ManaType", true);
+    string cardName = "";
 
     #region Effects
 

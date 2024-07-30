@@ -11,16 +11,17 @@ namespace ShadowCraft
     {
         public enum Cards
         {
-            TestCard
+            TestCard,
+            SoldierofDark
         }
         public enum ManaTypes
         {
-            light1,
-            light2,
-            neut1,
-            neut2,
-            dark1,
-            dark2
+            light,
+            fire,
+            water,
+            nature,
+            shadow,
+            death
         }
 
         [TextArea]
