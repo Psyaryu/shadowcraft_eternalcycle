@@ -6,6 +6,7 @@ namespace ShadowCraft
 {
     public class AIPlayer : Player
     {
+        public static AIPlayer share = null;
         public AIPlayer(CharacterAsset characterAsset) : base(characterAsset)
         {
         }

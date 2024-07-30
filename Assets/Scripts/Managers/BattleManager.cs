@@ -44,6 +44,7 @@ namespace ShadowCraft
         bool battleRunning = true;
         bool endOfTurn = false;
         bool isStandByPhase = false;
+        bool playerTurn = true;
 
         Player player = null;
         Player opponent = null;
