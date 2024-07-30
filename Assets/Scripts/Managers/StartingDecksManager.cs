@@ -1,31 +1,37 @@
 using ShadowCraft;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StartingDecksManager : MonoBehaviour
 {
-    public List<Card> SetBaseEnemyDeck(Player enemy)
-    {
-        List<Deck> Deck = new List<Deck>();
+    public static StartingDecksManager shared = null;
 
-        AIPlayer.share.AddToDeck("SoldierofRain");
-        AIPlayer.share.AddToDeck("SoldierofRain");
-        AIPlayer.share.AddToDeck("SoldierofNature");
-        AIPlayer.share.AddToDeck("SoldierofNature");
-        AIPlayer.share.AddToDeck("SoldierofFlames");
-        AIPlayer.share.AddToDeck("SoldierofFlames");
+    private void Awake()
+    {
+        if (shared == null)
+            shared = this;
+        else
+            Destroy(this);
+
+        DontDestroyOnLoad(this);
+    }
+
+    public void SetBaseEnemyDeck(Player enemy)
+    {
+        enemy.AddToDeck("SoldierofRain");
+        enemy.AddToDeck("SoldierofRain");
+        enemy.AddToDeck("SoldierofNature");
+        enemy.AddToDeck("SoldierofNature");
+        enemy.AddToDeck("SoldierofFlames");
+        enemy.AddToDeck("SoldierofFlames");
     }
 
     public void SetBasePlayerDeck(Player player)
     {
-        List<Deck> Deck = new List<Deck>();
-        Player.shared.AddToDeck("SoldierofLight");
-        Player.shared.AddToDeck("SoldierofLight");
-        Player.shared.AddToDeck("SoldierofShadows");
-        Player.shared.AddToDeck("SoldierofShadows");
-        Player.shared.AddToDeck("SoldierofRain");
-        Player.shared.AddToDeck("SoldierofRain");
-
+        player.AddToDeck("SoldierofLight");
+        player.AddToDeck("SoldierofLight");
+        player.AddToDeck("SoldierofShadows");
+        player.AddToDeck("SoldierofShadows");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
     }
 }

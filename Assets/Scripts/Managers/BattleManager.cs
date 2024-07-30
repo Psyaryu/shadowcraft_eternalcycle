@@ -255,6 +255,14 @@ namespace ShadowCraft
             }
         }
 
+        public void AddCardToBoardSlot(Card card, BoardSlot boardSlot)
+        {
+            var cardWidget = Instantiate(cardPrefab, handParent);
+            cardWidget.card = card;
+
+            AddCardToBoardSlot(cardWidget, boardSlot);
+        }
+
         public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
@@ -317,6 +325,7 @@ namespace ShadowCraft
         public bool CanPlaceCardInSlot(BoardSlot boardSlot)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+            canPlaceCard = canPlaceCard && boardSlot.GetIsFilled();
             return canPlaceCard;
         }
 
@@ -366,6 +375,8 @@ namespace ShadowCraft
         private Player GetOtherCharacter(Player battlePlayer) => battlePlayer == player ? opponent : player;
 
         public bool GetIsStandByPhase() => isStandByPhase;
+
+        public GameBoardWidget GetGameBoard() => gameBoardWidget;
 
         #endregion
 

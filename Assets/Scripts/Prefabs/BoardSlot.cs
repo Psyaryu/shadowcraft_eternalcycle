@@ -87,5 +87,7 @@ namespace ShadowCraft
         {
             meshRenderer.material.color = cycleType == CycleType.Light ? LightColor : DarkColor;
         }
+
+        public bool GetIsFilled() => card != null;
     }
 }

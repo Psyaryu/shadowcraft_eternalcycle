@@ -10,8 +10,12 @@ namespace ShadowCraft
 
         private void Start()
         {
-            // TODO: Play the audio clip here.
             AudioManager.Instance.PlayAudio(audioClip, "Background");
+        }
+
+        public void OnAdventure()
+        {
+            SceneManager.LoadScene("AdventureScene", LoadSceneMode.Single);
         }
 
         public void OnBattle()
