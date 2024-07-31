@@ -25,7 +25,8 @@ namespace ShadowCraft
 
         public static BattleManager shared = null;
 
-        public List<Card> effectedCards = new List<Card>();
+        public List<CardWidget> effectedCards = new List<CardWidget>();
+        public List<BoardSlot> effectedSlots = new List<BoardSlot>();
 
         [SerializeField]
         public CardWidget cardPrefab = null;
@@ -46,7 +47,7 @@ namespace ShadowCraft
         int startingHand = 5;
 
         [SerializeField]
-        GameBoardWidget gameBoardWidget = null;
+        public GameBoardWidget gameBoardWidget = null;
 
         bool battleRunning = true;
         bool isStandByPhase = false;
@@ -55,7 +56,10 @@ namespace ShadowCraft
         public Player player = null;
         public AIPlayer opponent = null;
         public CharacterAsset opponentCharacter = null;
-        Player currentPlayer = null;
+        public Player currentPlayer = null;
+        public Player otherCharacter = null;
+
+        public int turnNumber = 0;
 
         List<CardWidget> hand = new List<CardWidget>();
         List<CardWidget> field = new List<CardWidget>();
@@ -140,27 +144,25 @@ namespace ShadowCraft
         IEnumerator StartOfBattle()
         {
             Debug.Log("Start of Battle");
-
-            AudioManager.Instance.PlayBattleMusic();
+            // opponent.SetDeck();
+            turnNumber = 0;
             yield return null;
         }
 
         IEnumerator StartOfRound()
         {
+            turnNumber++;
+            foreach(var slot in gameBoardWidget.CardSlots)
+            {
+                slot.UpdateEnchant();
+            }
             cycleIndexStart = ((cycleIndexStart - 1) + lightDarkCycle.Count) % lightDarkCycle.Count;
-
-            var cycleCounts = new Dictionary<BoardSlot.CycleType, int>();
-            cycleCounts[BoardSlot.CycleType.Light] = 0;
-            cycleCounts[BoardSlot.CycleType.Shadow] = 0;
 
             for (int i = 0; i < gameBoardWidget.numberOfCardSlots * 2; i++)
             {
                 var cycleIndex = (cycleIndexStart + i % gameBoardWidget.numberOfCardSlots) % lightDarkCycle.Count;
                 gameBoardWidget.SetCycle(lightDarkCycle[cycleIndex], i);
-                cycleCounts[lightDarkCycle[cycleIndex]] = cycleCounts[lightDarkCycle[cycleIndex]] + 1;
             }
-
-            AudioManager.Instance.AdjustBattleMusic(cycleCounts[BoardSlot.CycleType.Light], cycleCounts[BoardSlot.CycleType.Shadow]);
 
             yield return null;
         }
@@ -204,6 +206,7 @@ namespace ShadowCraft
                 //cardWidget.card = card;
 
                 cardWidget.transform.parent = handParentEnemy;
+
             }
         }
 
@@ -222,7 +225,7 @@ namespace ShadowCraft
             Debug.Log($"{player.character.Name} Battle");
 
 
-            var otherCharacter = GetOtherCharacter(player);
+            otherCharacter = GetOtherCharacter(player);
 
             var cardsToRemove = new List<CardWidget>();
 
@@ -240,17 +243,84 @@ namespace ShadowCraft
                 {
                     oppositeCard = null;
                 }
+                
 
                 if(oppositeCard != null)
                 {
                     oppositeCard.card.health -= card.card.attack;
 
-                    if (oppositeCard.card.health <= 0)
+                    if (card.card.Tags.Contains("Splash"))
                     {
-                        otherCharacter.SendToGraveYard(oppositeCard);
-                        int extraDamage = math.abs(oppositeCard.card.health);
-                        otherCharacter.TakeDamage(extraDamage);
+                        effectedCards.Add(card);
+                        if(Oppositeslot != 0 || Oppositeslot != 4 || Oppositeslot != 5 || Oppositeslot != 9)
+                        {
+                            int left = Oppositeslot - 1;
+                            int right = Oppositeslot + 1;
+
+                            if (gameBoardWidget.CardSlots[left] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[left].card);
+                            }
+
+                            if (gameBoardWidget.CardSlots[right] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[right].card);
+                            }
+
+                        }
+                        else if(Oppositeslot == 0)
+                        {
+                            int right = Oppositeslot + 1;
+
+                            if(gameBoardWidget.CardSlots[right] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[right].card);
+                            }
+                        }
+                        else if (Oppositeslot == 4)
+                        {
+                            int left = Oppositeslot - 1;
+
+                            if (gameBoardWidget.CardSlots[left] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[left].card);
+                            }
+                        }
+                        else if (Oppositeslot == 5)
+                        {
+                            int right = Oppositeslot + 1;
+
+                            if (gameBoardWidget.CardSlots[right] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[right].card);
+                            }
+                        }
+                        else if (Oppositeslot == 9)
+                        {
+                            int left = Oppositeslot - 1;
+
+                            if (gameBoardWidget.CardSlots[left] != null)
+                            {
+                                effectedCards.Add(gameBoardWidget.CardSlots[left].card);
+                            }
+                        }
                     }
+                    if(card.card.Tags.Contains("Breath"))
+                    {
+                        otherCharacter.TakeDamage(card.card.attack);
+                    }
+
+                    Type type = Type.GetType(card.card.cardName);
+
+                    GameObject newObject = new GameObject("ScriptInstanceObject");
+                    MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+                    MethodInfo effectMethod = type.GetMethod("EffectAttack");
+
+                    effectMethod.Invoke(scriptInstance, null);
+
+                    CheckDeath(oppositeCard);
+                  
                 }
                 else
                 {
@@ -264,6 +334,30 @@ namespace ShadowCraft
             });
 
             yield return null;
+        }
+        public IEnumerator BoardSelectSlot()
+        {
+            while (true)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    // Perform raycasting
+                    if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+                    {
+                        BoardSlot temp = hit.collider.GetComponent<BoardSlot>();
+
+
+                        if (temp != null)
+                        {
+                            // Invoke the callback with the hit object
+                            effectedSlots.Add(temp);
+                            yield break; // Stop the coroutine once the object is found
+                        }
+                    }
+                }
+                yield return null;
+            }
         }
 
         public IEnumerator CardSelectFieldCor()
@@ -282,7 +376,7 @@ namespace ShadowCraft
                         if (temp != null)
                         {
                             // Invoke the callback with the hit object
-                            effectedCards.Add(temp1);
+                            effectedCards.Add(temp);
                             yield break; // Stop the coroutine once the object is found
                         }
                     }
@@ -299,27 +393,41 @@ namespace ShadowCraft
         IEnumerator EndOfBattle()
         {
             Debug.Log("End of Battle");
-            
-            yield return TransitionToMainMenu();
-        }
-
-        IEnumerator TransitionToMainMenu()
-        {
-            yield return AudioManager.Instance.FadeOutBattle();
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            yield return null;
         }
 
         #endregion
 
         #region Battle Utilities
+        public void CheckDeath(CardWidget card)
+        {
+            if (card.card.health <= 0)
+            {
+                otherCharacter.SendToGraveYard(card);
+                effectedSlots.Clear();
+                effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
+                Type type1 = Type.GetType(card.card.cardName);
 
+                GameObject newObject1 = new GameObject("ScriptInstanceObject");
+                MonoBehaviour scriptInstance1 = newObject1.AddComponent(type1) as MonoBehaviour;
+
+                MethodInfo effectMethod1 = type1.GetMethod("EffectDeath");
+
+                effectMethod1.Invoke(scriptInstance1, null);
+
+                int extraDamage = math.abs(card.card.health);
+                if (!card.card.Tags.Contains("Breath"))
+                    otherCharacter.TakeDamage(extraDamage);
+            }
+        }
         public void PositionHandCards()
         {
             var maxWidth = 11f; // board is 15, so 10 + card buffer
             var sectionWidth = 2.5f; // card size
             var totalCards = Mathf.Floor(maxWidth / sectionWidth) + 1;
 
-            //var yPosition = handParent.position.y;
+            var yPosition = handParent.position.y;
 
             var shiftAmount = Mathf.Min((handParent.childCount - 1) / 2f * sectionWidth, maxWidth / 2f);
 
@@ -331,7 +439,7 @@ namespace ShadowCraft
                 var xPosition = i * sectionWidth - shiftAmount - flexShift;
 
                 var cardTransform = handParent.GetChild(i);
-                cardTransform.localPosition = new Vector3(xPosition, 0, -(i / 100f));
+                cardTransform.position = new Vector3(xPosition, yPosition, -(i / 100f));
             }
         }
 
@@ -370,6 +478,8 @@ namespace ShadowCraft
             gameBoardWidget.AddCard(cardWidget, boardSlot);
             currentPlayer.PlayCard(cardWidget);
 
+            effectedSlots.Clear();
+            effectedSlots.Add(boardSlot);
             Type type = Type.GetType(cardWidget.card.cardName);
 
             GameObject newObject = new GameObject("ScriptInstanceObject");
@@ -501,7 +611,7 @@ namespace ShadowCraft
         public void OnMainMenu()
         {
             battleRunning = false;
-            StartCoroutine(TransitionToMainMenu());
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
 
         public void OnEndTurn()

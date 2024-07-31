@@ -21,14 +21,14 @@ public class CardSkellaton : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<Card> effectedCards = new List<Card>();
+        List<CardWidget> effectedCards = new List<CardWidget>();
         StartCoroutine(BattleManager.shared.CardSelectFieldCor());
 
         effectedCards = BattleManager.shared.effectedCards;
 
         for (int i = 0; i < effectedCards.Count; i++)
         {
-            effectedCards[i].health++; 
+            effectedCards[i].card.health++; 
         }
         
     }

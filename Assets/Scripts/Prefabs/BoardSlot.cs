@@ -44,9 +44,11 @@ namespace ShadowCraft
         [SerializeField]
         private Color HoverFilledDarkColor = Color.green;
 
-        private CycleType cycleType = CycleType.Light;
+        public CycleType cycleType = CycleType.Light;
 
-        private CardWidget card = null;
+        public CardWidget card = null;
+
+        public int torchTurn = 0;
 
         public void SetCard(CardWidget card) => this.card = card;
 
@@ -88,6 +90,22 @@ namespace ShadowCraft
             meshRenderer.material.color = cycleType == CycleType.Light ? LightColor : DarkColor;
         }
 
+        public void UpdateEnchant()
+        {
+            if (torchTurn == BattleManager.shared.turnNumber)
+            {
+                int Oppositeslot = (SlotNumber + 5) % 10;
+
+                if(BattleManager.shared.gameBoardWidget.CardSlots[Oppositeslot].cycleType == CycleType.Light)
+                {
+                    this.OnLight();
+                }
+                else
+                {
+                    this.OnDark();
+                }
+            }
+        }
         public bool GetIsFilled() => card != null;
     }
 }

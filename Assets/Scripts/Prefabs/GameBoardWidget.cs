@@ -18,7 +18,7 @@ namespace ShadowCraft
         public int numberOfCardSlots = 5;
 
         [SerializeField]
-        List<BoardSlot> CardSlots = new List<BoardSlot>();
+        public List<BoardSlot> CardSlots = new List<BoardSlot>();
 
         [SerializeField]
         List<Transform> DeckPositions = new List<Transform>();
@@ -27,6 +27,8 @@ namespace ShadowCraft
         GameObject boardGameObject = null;
 
         public CardWidget[] cards = null;
+
+        public bool DruidActive = false;
 
         #endregion
 
@@ -53,6 +55,37 @@ namespace ShadowCraft
             cards[boardSlot.SlotNumber] = cardWidget;
             cardWidget.card.boardSlot = boardSlot.SlotNumber;
             boardSlot.SetCard(cardWidget);
+        }
+        public void UpdateEffects()
+        {
+
+            if (DruidActive == true)
+            {
+                List<BoardSlot> slots = GetSlotsofTag("Creature");
+
+                foreach (var slot in slots)
+                {
+                    if (!slot.card.card.DruidActive)
+                    {
+                        slot.card.card.attack += 2;
+                        slot.card.card.DruidActive = false;
+                    }
+                }
+            }
+        }
+        public List<BoardSlot> GetSlotsofTag(string tag)
+        {
+            List<BoardSlot> slots = new List<BoardSlot>();
+            foreach (var slot in CardSlots)
+            {
+                
+                if (slot.card.card.Tags.Contains(tag))
+                {
+                    slots.Add(slot);
+                }
+            }
+
+            return slots;
         }
 
         public void MoveCard(int fromSlot, int toSlot)

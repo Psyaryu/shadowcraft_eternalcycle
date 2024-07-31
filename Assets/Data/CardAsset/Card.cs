@@ -16,6 +16,11 @@ namespace ShadowCraft
             SoldierofRain,
             SoldierofNature,
             SoldierofFlames,
+            Bear,
+            Druid,
+            FlameEater,
+            Torch
+
         }
         public enum ManaTypes
         {
@@ -36,12 +41,15 @@ namespace ShadowCraft
         public int boardSlot = -1;
 
         public int[] manaCost = {0, 0, 0, 0, 0, 0};
+        public List<string> Tags = null;
 
         [TextArea]
         public string description = "This card does nothing!";
 
         private int startingAtk = -1;
         private int startingHealth = -1;
+
+        public bool DruidActive = false;
 
         public static CardWidget CreateCard(string cardName)
         {

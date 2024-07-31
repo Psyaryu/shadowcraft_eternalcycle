@@ -5,14 +5,14 @@ using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
 
-public class TestCard : MonoBehaviour
+public class Torch : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
-    int health = 2;
-    int attack = 2;
-    string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
-    string cardName = "TestCard";
+    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int health = 0;
+    int attack = 0;
+    string description = "Light up a space for 3 turns";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "Fire", true);
+    string cardName = "Torch";
 
     #region Effects
 
@@ -21,15 +21,18 @@ public class TestCard : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<CardWidget> effectedCards = new List<CardWidget>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
+        List<BoardSlot> effectedSlots = new List<BoardSlot>();
+        StartCoroutine(BattleManager.shared.BoardSelectSlot());
 
-        effectedCards = BattleManager.shared.effectedCards;
+        effectedSlots = BattleManager.shared.effectedSlots;
 
-        for (int i = 0; i < effectedCards.Count; i++)
+        for (int i = 0; i < effectedSlots.Count; i++)
         {
-            effectedCards[i].card.health++; 
+            effectedSlots[i].OnLight();
+            effectedSlots[i].torchTurn = BattleManager.shared.turnNumber + 3;
         }
+
+       
         
     }
 
