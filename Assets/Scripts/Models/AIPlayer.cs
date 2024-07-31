@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace ShadowCraft
@@ -26,7 +27,6 @@ namespace ShadowCraft
         
         public override IEnumerator StandByPhase()
         {
-
             var gameBoard = BattleManager.shared.GetGameBoard();
             var boardSlots = gameBoard.GetOpponentBoardSlots();
 
@@ -36,8 +36,17 @@ namespace ShadowCraft
 
             foreach (var cardWidget in temphand)
             {
-                foreach (var boardSlot in boardSlots)
+                var nextBoardSlots = new List<BoardSlot>();
+                nextBoardSlots.AddRange(boardSlots);
+
+                var totalSlots = nextBoardSlots.Count;
+
+                for (int i = 0; i < totalSlots; i++)
                 {
+                    var randomIndex = Random.Range(0, nextBoardSlots.Count);
+                    var boardSlot = nextBoardSlots[randomIndex];
+                    nextBoardSlots.RemoveAt(randomIndex);
+
                     if (!BattleManager.shared.CanPlaceCardInSlot(boardSlot))
                         continue;
 
@@ -48,10 +57,8 @@ namespace ShadowCraft
                         tempCard.Add(cardWidget);
                         break;
                     }
-                }                
+                }       
             }
-
-            //tempCard.ForEach(CardWidget => GameObject.Destroy(CardWidget.gameObject));
 
             yield return null;
         }

@@ -200,9 +200,6 @@ namespace ShadowCraft
             }
             else
             {
-                //var cardWidget = Instantiate(cardPrefab, handParentEnemy);
-                //cardWidget.card = card;
-
                 cardWidget.transform.parent = handParentEnemy;
             }
         }
