@@ -164,7 +164,7 @@ namespace ShadowCraft
             Debug.Log("Start of Battle");
             // opponent.SetDeck();
             turnNumber = 0;
-
+            player.ShuffleDeck();
             RewardsGameObject.gameObject.SetActive(false);
             AudioManager.Instance.PlayBattleMusic();
             yield return null;
@@ -220,7 +220,7 @@ namespace ShadowCraft
             yield return null;
         }
 
-        IEnumerator DrawPhase(Player player)
+        public IEnumerator DrawPhase(Player player)
         {
             var cardWidget = player.Draw();
 
@@ -287,6 +287,29 @@ namespace ShadowCraft
                         if(gameBoardWidget.CardSlots[oppositeCard.card.boardSlot].GetCycleType() == BoardSlot.CycleType.Light)
                         {
                             oppositeCard.card.health -= card.card.attack;
+                        }
+                    }
+                    else if (card.card.Tags.Contains("Spirit"))
+                    {
+                        int randomNumber = UnityEngine.Random.Range(0, 5);
+                        int randomNumber2 = UnityEngine.Random.Range(0, 5);
+                        if(currentPlayer == player)
+                        {
+                                randomNumber = (randomNumber + 5) % 10;
+                            randomNumber2 = (randomNumber2 + 5) % 10;
+                        }
+                        if(randomNumber == 5)
+                        {
+                            gameBoardWidget.CardSlots[randomNumber2].card.card.health -= card.card.attack;
+                        }
+                        else if(randomNumber2 == 5)
+                        {
+                            gameBoardWidget.CardSlots[randomNumber].card.card.health -= card.card.attack;
+                        }
+                        else
+                        {
+                            gameBoardWidget.CardSlots[randomNumber2].card.card.health -= card.card.attack;
+                            gameBoardWidget.CardSlots[randomNumber].card.card.health -= card.card.attack;
                         }
                     }
                     else
@@ -548,6 +571,7 @@ namespace ShadowCraft
                     otherCharacter.TakeDamage(extraDamage);
             }
         }
+
         public void PositionHandCards()
         {
             var maxWidth = 11f; // board is 15, so 10 + card buffer

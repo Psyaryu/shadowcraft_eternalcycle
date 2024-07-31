@@ -28,8 +28,6 @@ public class YinYang : MonoBehaviour
         List<BoardSlot> slots = new List<BoardSlot>();
         foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
         {
-            if (slot.card != null)
-            {
                 if (slot.GetCycleType() == CycleType.Light)
                 {
                     light++;
@@ -38,7 +36,6 @@ public class YinYang : MonoBehaviour
                 {
                     dark++;
                 }
-            }
         }
 
         if(light >= 5)
@@ -52,16 +49,7 @@ public class YinYang : MonoBehaviour
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
 
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
 
     }
 

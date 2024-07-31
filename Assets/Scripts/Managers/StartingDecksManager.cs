@@ -27,14 +27,26 @@ public class StartingDecksManager : MonoBehaviour
 
     public void SetBasePlayerDeck(Player player)
     {
-        player.AddToDeck("Whirlpool");
-        player.AddToDeck("SoldierofRain");
+
         player.AddToDeck("Bear");
+        player.AddToDeck("Druid");
+        player.AddToDeck("Torch");
+        player.AddToDeck("FlameEater");
+        player.AddToDeck("DarkRitual");
+        player.AddToDeck("Nightmare");
         player.AddToDeck("Whirlpool");
-        player.AddToDeck("SoldierofLight");
-        player.AddToDeck("SoldierofShadows");
-        player.AddToDeck("Whirlpool");
-        player.AddToDeck("SoldierofNature");
-        player.AddToDeck("SoldierofFlames");
+        player.AddToDeck("Paladin");
+        player.AddToDeck("VampireBat");
+        player.AddToDeck("UndeadKnight");
+        player.AddToDeck("Torchbearer");
+        player.AddToDeck("RedDragon");
+        player.AddToDeck("ChaosBringer");
+        player.AddToDeck("Treant");
+        player.AddToDeck("Wolf");
+        player.AddToDeck("Revalation");
+        player.AddToDeck("DarkPact");
+        player.AddToDeck("ShadowAssasin");
+        player.AddToDeck("YinYang");
+
     }
 }

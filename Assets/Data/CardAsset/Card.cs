@@ -34,6 +34,9 @@ namespace ShadowCraft
             VampireBat,
             Paladin,
             Whirlpool,
+            Nightmare,
+            MagicCarp,
+            FlameSpirit
 
 
         }

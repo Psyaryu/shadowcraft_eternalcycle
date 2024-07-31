@@ -24,7 +24,7 @@ public class ChaosBringer : MonoBehaviour
     public void Effect()
     {
         var effectedSlots = BattleManager.shared.effectedSlots;
-        effectedSlots[0].chaosBringerTurn = BattleManager.shared.turnNumber += 1;
+        effectedSlots[0].chaosBringerTurn = BattleManager.shared.turnNumber + 1;
         List<BoardSlot> slots = new List<BoardSlot>();
         foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
         {
@@ -32,7 +32,7 @@ public class ChaosBringer : MonoBehaviour
             {
                 slot.OnDark();
             }
-            if (slot.GetCycleType() == CycleType.Light)
+            else if (slot.GetCycleType() == CycleType.Shadow)
             {
                 slot.OnLight();
             }

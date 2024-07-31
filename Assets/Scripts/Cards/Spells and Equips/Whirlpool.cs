@@ -12,9 +12,9 @@ public class Whirlpool : MonoBehaviour
     int health = 0;
     int attack = 0;
     string description = "Spell. Switch position of two cards on your side";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "water", true);
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "Water", true);
     string cardName = "Whirlpool";
-    List<string> Tags = new List<string> { "Whirlpool" };
+    List<string> Tags = new List<string> {"Whirlpool"};
 
     #region Effects
 

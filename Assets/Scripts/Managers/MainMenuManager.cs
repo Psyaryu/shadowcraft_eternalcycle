@@ -52,7 +52,7 @@ namespace ShadowCraft
             {
                 var t = (Time.time - startTime) / endTime;
 
-                canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+             //s   canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
                 yield return null;
             }
 

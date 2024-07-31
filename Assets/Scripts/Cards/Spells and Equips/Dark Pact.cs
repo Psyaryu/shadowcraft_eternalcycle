@@ -23,8 +23,9 @@ public class DarkPact : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.currentPlayer.Draw();
-        BattleManager.shared.currentPlayer.Draw();
+   
+        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
+        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
 
         BattleManager.shared.currentPlayer.health -= 3;
     }

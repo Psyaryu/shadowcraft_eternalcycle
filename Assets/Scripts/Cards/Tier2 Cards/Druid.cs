@@ -10,10 +10,10 @@ public class Druid : MonoBehaviour
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
     int health = 4;
     int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
+    string description = "Raises all creture's attack by 2";
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
     string cardName = "Druid";
-    List<string> Tags = new List<string> {"Creature"};
+    List<string> Tags = new List<string> {""};
 
     #region Effects
 
