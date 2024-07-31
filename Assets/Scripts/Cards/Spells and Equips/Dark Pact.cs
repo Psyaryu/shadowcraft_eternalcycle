@@ -4,15 +4,17 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using static ShadowCraft.BoardSlot;
 
-public class TestCard : MonoBehaviour
+public class DarkPact : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
-    int health = 2;
-    int attack = 2;
-    string description = "This is a test card with 2/2 stats";
+    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int health = 0;
+    int attack = 0;
+    string description = "Draw 2 cards and take 3 damage";
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
-    string cardName = "TestCard";
+    string cardName = "DarkPact";
+    List<string> Tags = new List<string> {""};
 
     #region Effects
 
@@ -21,16 +23,15 @@ public class TestCard : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<CardWidget> effectedCards = new List<CardWidget>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
+        BattleManager.shared.currentPlayer.Draw();
+        BattleManager.shared.currentPlayer.Draw();
 
-        effectedCards = BattleManager.shared.effectedCards;
+        BattleManager.shared.currentPlayer.health -= 3;
+    }
+    public void EffectDeath()
+    {
+       
 
-        for (int i = 0; i < effectedCards.Count; i++)
-        {
-            effectedCards[i].card.health++; 
-        }
-        
     }
 
 
@@ -44,6 +45,7 @@ public class TestCard : MonoBehaviour
         newCard.manaCost = ManaCost;
         newCard.cardType = cardType;
         newCard.cardName = cardName;
+        newCard.Tags = Tags;
 
         return newCard;
     }

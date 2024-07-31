@@ -4,15 +4,17 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using static ShadowCraft.BoardSlot;
 
-public class TestCard : MonoBehaviour
+public class ShadowAssasin : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
+    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
     int health = 2;
-    int attack = 2;
-    string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
-    string cardName = "TestCard";
+    int attack = 0;
+    string description = "+4/0 while on dark tile";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
+    string cardName = "ShadowAssasin";
+    List<string> Tags = new List<string> {"ShadowAssasin"};
 
     #region Effects
 
@@ -21,16 +23,16 @@ public class TestCard : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<CardWidget> effectedCards = new List<CardWidget>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
-
-        effectedCards = BattleManager.shared.effectedCards;
-
-        for (int i = 0; i < effectedCards.Count; i++)
+        List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
+        if (effectedSlots[0].cycleType == CycleType.Shadow)
         {
-            effectedCards[i].card.health++; 
+            effectedSlots[0].card.card.attack += 4;
         }
-        
+    }
+    public void EffectDeath()
+    {
+       
+
     }
 
 
@@ -44,6 +46,7 @@ public class TestCard : MonoBehaviour
         newCard.manaCost = ManaCost;
         newCard.cardType = cardType;
         newCard.cardName = cardName;
+        newCard.Tags = Tags;
 
         return newCard;
     }

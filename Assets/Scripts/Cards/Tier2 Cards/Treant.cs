@@ -4,15 +4,18 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using Unity.Mathematics;
 
-public class TestCard : MonoBehaviour
+public class Treant : MonoBehaviour
 {
-    int[] ManaCost = { 2, 2, 2, 2, 2, 2 };
+    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
     int health = 2;
     int attack = 2;
-    string description = "This is a test card with 2/2 stats";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
-    string cardName = "TestCard";
+    string description = "Creature. +0/+3 when played on a light tile";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
+    string cardName = "Treant";
+    List<string> Tags = new List<string> {"Creature"};
+
 
     #region Effects
 
@@ -21,17 +24,19 @@ public class TestCard : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<CardWidget> effectedCards = new List<CardWidget>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
-
-        effectedCards = BattleManager.shared.effectedCards;
-
-        for (int i = 0; i < effectedCards.Count; i++)
+       var effectedSlots = BattleManager.shared.effectedSlots;
+       
+        if (effectedSlots[0].GetCycleType() == BoardSlot.CycleType.Light)
         {
-            effectedCards[i].card.health++; 
+            effectedSlots[0].card.card.health += 3;
         }
+    }
+
+    public void EffectAttack()
+    {
         
     }
+
 
 
     #region Conversion
@@ -44,6 +49,7 @@ public class TestCard : MonoBehaviour
         newCard.manaCost = ManaCost;
         newCard.cardType = cardType;
         newCard.cardName = cardName;
+        newCard.Tags = Tags;
 
         return newCard;
     }

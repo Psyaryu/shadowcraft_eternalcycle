@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,9 +45,13 @@ namespace ShadowCraft
         [SerializeField]
         private Color HoverFilledDarkColor = Color.green;
 
-        private CycleType cycleType = CycleType.Light;
+        public CycleType cycleType = CycleType.Light;
 
-        private CardWidget card = null;
+        public CardWidget card = null;
+
+        public int torchTurn = 0;
+        public int chaosBringerTurn = 0;
+        public bool redDragon = false;
 
         public void SetCard(CardWidget card) => this.card = card;
 
@@ -88,6 +93,57 @@ namespace ShadowCraft
             meshRenderer.material.color = cycleType == CycleType.Light ? LightColor : DarkColor;
         }
 
+        public void UpdateEnchant()
+        {
+            if (torchTurn == BattleManager.shared.turnNumber)
+            {
+                int Oppositeslot = (SlotNumber + 5) % 10;
+
+                if(BattleManager.shared.gameBoardWidget.CardSlots[Oppositeslot].cycleType == CycleType.Light)
+                {
+                    this.OnLight();
+                }
+                else
+                {
+                    this.OnDark();
+                }
+            }
+            if (chaosBringerTurn == BattleManager.shared.turnNumber)
+            {
+                foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+                {
+                    if (slot.GetCycleType() == CycleType.Light)
+                    {
+                        slot.OnDark();
+                    }
+                    if (slot.GetCycleType() == CycleType.Light)
+                    {
+                        slot.OnLight();
+                    }
+                }
+            }
+            if (redDragon == true)
+            {
+
+                int light1 = 0;
+                int dark1 = 0;
+                foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+                {
+                   
+                        if (slot.GetCycleType() == CycleType.Light)
+                        {
+                            light1++;
+                        }
+                        if (slot.GetCycleType() == CycleType.Shadow)
+                        {
+                            dark1++;
+                        }
+                }
+
+                int attack = Math.Abs(light1 - dark1);
+                this.card.card.attack = attack;
+            }
+        }
         public bool GetIsFilled() => card != null;
     }
 }

@@ -8,7 +8,7 @@ namespace ShadowCraft
     {
         public CharacterAsset character = null;
 
-        int health = -1;
+        public int health = -1;
 
         protected List<CardWidget> deck = new List<CardWidget>();
         protected List<CardWidget> hand = new List<CardWidget>();

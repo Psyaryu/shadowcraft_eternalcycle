@@ -4,15 +4,18 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using Unity.Mathematics;
 
-public class CardSkellaton : MonoBehaviour
+public class Wolf : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 0;
-    int attack = 0;
-    string description = "";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "ManaType", true);
-    string cardName = "";
+    int health = 2;
+    int attack = 1;
+    string description = "Creature. +1/+0 for each creature in play";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
+    string cardName = "Wolf";
+    List<string> Tags = new List<string> {  "Creature" };
+
 
     #region Effects
 
@@ -21,17 +24,20 @@ public class CardSkellaton : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<CardWidget> effectedCards = new List<CardWidget>();
-        StartCoroutine(BattleManager.shared.CardSelectFieldCor());
-
-        effectedCards = BattleManager.shared.effectedCards;
-
-        for (int i = 0; i < effectedCards.Count; i++)
-        {
-            effectedCards[i].card.health++; 
-        }
+       var effectedSlots = BattleManager.shared.effectedSlots;
+       var slots = BattleManager.shared.gameBoardWidget.GetSlotsofTag("Creature");
         
+        foreach (var slot in slots)
+        {
+            effectedSlots[0].card.card.attack += 1;
+        }
     }
+
+    public void EffectAttack()
+    {
+       
+    }
+
 
 
     #region Conversion
@@ -44,6 +50,7 @@ public class CardSkellaton : MonoBehaviour
         newCard.manaCost = ManaCost;
         newCard.cardType = cardType;
         newCard.cardName = cardName;
+        newCard.Tags = Tags;
 
         return newCard;
     }
