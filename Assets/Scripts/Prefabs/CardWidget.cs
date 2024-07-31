@@ -8,7 +8,9 @@ namespace ShadowCraft
         public Card card { get; set; }
         public bool isPlaced = false;
         private string[] manaTypes = { "Light", "Fire", "Water", "Nature", "Shadow", "Death" };
-        private Color[] manaColors = { Color.yellow, Color.red, Color.cyan, Color.green, Color.gray, Color.black };
+        private Color[] manaColors = { new Color(1f, 1f, 273f/255f, 1f), Color.red, Color.cyan, Color.green, Color.gray, Color.black };
+
+
 
         [SerializeField]
         TextMeshProUGUI attackText = null;
@@ -33,6 +35,15 @@ namespace ShadowCraft
 
         private void Start()
         {
+            manaColors = new Color[] {
+                new Color(1f, 1f, 173f / 255f, 1f),
+                FromRGB(242, 125,12),
+                FromRGB(90, 188,216),
+                FromRGB(74, 0,65),
+                FromRGB(35, 188,115),
+                FromRGB(69, 18,8),
+            };
+
             if (card != null)
             {
                 attackText.text = card.attack.ToString();
@@ -43,13 +54,29 @@ namespace ShadowCraft
             }
         }
 
+        private Color FromRGB(float red, float green, float blue)
+        {
+            return new Color(red / 255f, blue / 255f, green / 255f, 1f);
+        }
+
         private void Update()
         {
             if (card == null)
                 return;
 
-            attackText.text = card.attack.ToString();
-            healthText.text = card.health.ToString();
+            if (card.IsSpell())
+            {
+                attackText.gameObject.SetActive(false);
+                healthText.gameObject.SetActive(false);
+            }
+            else
+            {
+                attackText.gameObject.SetActive(true);
+                healthText.gameObject.SetActive(true);
+                attackText.text = card.attack.ToString();
+                healthText.text = card.health.ToString();
+            }
+
             cardNameText.text = card.cardName;
             descriptionText.text = card.description.ToString();
             SetMana();         
@@ -59,7 +86,7 @@ namespace ShadowCraft
         {
             var manaCosts = this.card.manaCost;
 
-            TMP_Text[] manaTexts = { mana1Text, mana2Text, mana3Text };
+            TextMeshProUGUI[] manaTexts = { mana1Text, mana2Text, mana3Text };
             foreach (var text in manaTexts)
             {
                 text.text = "";
@@ -73,7 +100,8 @@ namespace ShadowCraft
                     if (manaIndex < manaTexts.Length)
                     {
                         manaTexts[manaIndex].text = $"{manaTypes[i]}: {manaCosts[i]}";
-                        manaTexts[manaIndex].color = manaColors[manaIndex];
+                        
+                        manaTexts[manaIndex].colorGradient = new VertexGradient(manaColors[manaIndex], Color.white, manaColors[manaIndex], Color.white);
                         manaIndex++;
                     }
                 }

@@ -11,7 +11,7 @@ namespace ShadowCraft
         public int health = -1;
 
         protected List<CardWidget> deck = new List<CardWidget>();
-        protected List<CardWidget> hand = new List<CardWidget>();
+        public List<CardWidget> hand = new List<CardWidget>();
         public List<CardWidget> field = new List<CardWidget>();
         public List<CardWidget> graveyard = new List<CardWidget>();
 
@@ -102,7 +102,8 @@ namespace ShadowCraft
         public void PlayCard(CardWidget cardWidget)
         {
             field.Add(cardWidget);
-            hand.Remove(cardWidget);
+            var handIndex = hand.FindIndex(Card => Card.card == cardWidget.card);
+            hand.RemoveAt(handIndex);
             cardWidget.isPlaced = true;
         }
 

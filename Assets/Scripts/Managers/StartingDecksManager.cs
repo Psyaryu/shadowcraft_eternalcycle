@@ -27,11 +27,33 @@ public class StartingDecksManager : MonoBehaviour
 
     public void SetBasePlayerDeck(Player player)
     {
-        player.AddToDeck("Bear");
-        player.AddToDeck("Druid");
-        player.AddToDeck("Torch");
-        player.AddToDeck("FlameEater");
-        player.AddToDeck("Bear");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain"); player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain"); player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain"); player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
+        player.AddToDeck("SoldierofRain");
         player.AddToDeck("SoldierofRain");
     }
 }

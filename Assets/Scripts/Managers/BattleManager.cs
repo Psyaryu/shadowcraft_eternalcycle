@@ -145,7 +145,10 @@ namespace ShadowCraft
                 { 
                     currentPlayer = character;
                     yield return StartOfTurn(character);
-                    yield return DrawPhase(character);
+
+                    for (int i = character.hand.Count; i < 5; i++)
+                        yield return DrawPhase(character);
+
                     yield return StandbyPhase(character);
                     yield return BattlePhase(character);
 
@@ -697,7 +700,7 @@ namespace ShadowCraft
         public GameBoardWidget GetGameBoard() => gameBoardWidget;
 
         #endregion
-
+        
         #region UI Actions
 
         public void OnMainMenu()
