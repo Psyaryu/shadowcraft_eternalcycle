@@ -29,27 +29,32 @@ namespace ShadowCraft
                 mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
                 description = transform.Find("Description").GetComponent<TMP_Text>();
 
-                attack.text = card.attack.ToString();
-                health.text = card.health.ToString();
-                cardName.text = card.cardName;
-                description.text = card.description.ToString();
-                SetMana();
+                if (card != null)
+                {
+                    attack.text = card.attack.ToString();
+                    health.text = card.health.ToString();
+                    cardName.text = card.cardName;
+                    description.text = card.description.ToString();
+                    SetMana();
+                }
             }
-
         }
 
         private void Update()
         {
+            if (card == null)
+                return;
+
             if (transform.Find("Attack") != null)
             {
-                attack = transform.Find("Attack").GetComponent<TMP_Text>();
-                health = transform.Find("Health").GetComponent<TMP_Text>();
-                cardName = transform.Find("Name").GetComponent<TMP_Text>();
-                Transform manaTransform = transform.Find("Mana");
-                mana1 = manaTransform.Find("Mana1").GetComponent<TMP_Text>();
-                mana2 = manaTransform.Find("Mana2").GetComponent<TMP_Text>();
-                mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
-                description = transform.Find("Description").GetComponent<TMP_Text>();
+                //attack = transform.Find("Attack").GetComponent<TMP_Text>();
+                //health = transform.Find("Health").GetComponent<TMP_Text>();
+                //cardName = transform.Find("Name").GetComponent<TMP_Text>();
+                //Transform manaTransform = transform.Find("Mana");
+                //mana1 = manaTransform.Find("Mana1").GetComponent<TMP_Text>();
+                //mana2 = manaTransform.Find("Mana2").GetComponent<TMP_Text>();
+                //mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
+                //description = transform.Find("Description").GetComponent<TMP_Text>();
 
                 attack.text = card.attack.ToString();
                 health.text = card.health.ToString();

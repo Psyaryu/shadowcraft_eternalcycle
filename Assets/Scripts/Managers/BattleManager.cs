@@ -14,8 +14,24 @@ namespace ShadowCraft
     public class BattleManager : MonoBehaviour
     {
         #region Properties
+
+        [SerializeField]
+        CanvasGroup hudCanvasGroup;
+
+        [SerializeField]
+        GameObject RewardsGameObject = null;
+
+        [SerializeField]
+        CardWidget CardReward1 = null;
+
+        [SerializeField]
+        CardWidget CardReward2 = null;
+
+        [SerializeField]
+        CardWidget CardReward3 = null;
+
         //Index Identifiers for ManaTypes
-        int light = 0;
+        int lightMana = 0;
         int fire = 1;
         int water = 2;
         int nature = 3;
@@ -50,7 +66,6 @@ namespace ShadowCraft
 
         bool battleRunning = true;
         bool isStandByPhase = false;
-        bool playerTurn = true;
 
         public Player player = null;
         public AIPlayer opponent = null;
@@ -78,7 +93,6 @@ namespace ShadowCraft
 
         private void Awake()
         {
-
             player = GameManager.shared.player;
             opponent = new AIPlayer(opponentCharacter);
             shared = this;
@@ -86,6 +100,9 @@ namespace ShadowCraft
 
         private void Start()
         {
+            RewardsGameObject.gameObject.SetActive(false);
+            hudCanvasGroup.alpha = 1f;
+
             lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Light, gameBoardWidget.numberOfCardSlots));
             lightDarkCycle.AddRange(Enumerable.Repeat(BoardSlot.CycleType.Shadow, gameBoardWidget.numberOfCardSlots));
 
@@ -140,7 +157,7 @@ namespace ShadowCraft
         IEnumerator StartOfBattle()
         {
             Debug.Log("Start of Battle");
-
+            RewardsGameObject.gameObject.SetActive(false);
             AudioManager.Instance.PlayBattleMusic();
             yield return null;
         }
@@ -244,9 +261,9 @@ namespace ShadowCraft
 
                     if (oppositeCard.card.health <= 0)
                     {
-                        otherCharacter.SendToGraveYard(oppositeCard);
                         int extraDamage = math.abs(oppositeCard.card.health);
                         otherCharacter.TakeDamage(extraDamage);
+                        cardsToRemove.Add(oppositeCard);
                     }
                 }
                 else
@@ -256,8 +273,8 @@ namespace ShadowCraft
             }
 
             cardsToRemove.ForEach(Card => {
-                RemoveCardFromBoardSlot(Card);
                 otherCharacter.SendToGraveYard(Card);
+                RemoveCardFromBoardSlot(Card);
             });
 
             yield return null;
@@ -274,6 +291,15 @@ namespace ShadowCraft
                     if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
                     {
                         CardWidget temp = hit.collider.GetComponent<CardWidget>();
+
+                        if (temp == null)
+                            temp = hit.collider.GetComponentInParent<CardWidget>();
+
+                        if (temp == null)
+                        {
+
+                            yield break;
+                        }
                         Card temp1 = temp.card;
 
                         if (temp != null)
@@ -296,7 +322,48 @@ namespace ShadowCraft
         IEnumerator EndOfBattle()
         {
             Debug.Log("End of Battle");
-            
+
+            var startTime = Time.time;
+            var endTime = startTime + 0.25f;
+
+            while (Time.time < endTime)
+            {
+                var t = (Time.time - startTime) / endTime;
+                var alpha = Mathf.Lerp(0f, 1f, t);
+
+                hudCanvasGroup.alpha = 1f - alpha;
+                yield return null;
+            }
+
+            hudCanvasGroup.alpha = 0f;
+
+            if (!player.IsDead()) {
+                var allCards = Enum.GetValues(typeof(Cards)).Cast<Cards>().ToList();
+
+                var cardRewards = new List<CardWidget> { CardReward1, CardReward2, CardReward3 };
+
+                foreach (var cardReward in cardRewards)
+                {
+                    var randomIndex = UnityEngine.Random.Range(0, allCards.Count);
+                    var randomCard = allCards[randomIndex];
+                    Card.AttachCardToCardWidget(cardReward, randomCard);
+                    allCards.RemoveAt(randomIndex);
+                }
+
+                RewardsGameObject.gameObject.SetActive(true);
+                handParent.gameObject.SetActive(false);
+                gameBoardWidget.gameObject.SetActive(false);
+
+                yield return CardSelectFieldCor();
+
+                var selectedCard = effectedCards.Last();
+                effectedCards.Clear();
+
+                var reward = cardRewards.First(Reward => Reward.card == selectedCard);
+
+                player.AddToDeck(reward);
+            }
+
             yield return TransitionToMainMenu();
         }
 
@@ -369,32 +436,21 @@ namespace ShadowCraft
 
             Type type = Type.GetType(cardWidget.card.cardName);
 
-            GameObject newObject = new GameObject("ScriptInstanceObject");
-            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+            foreach (var component in cardWidget.gameObject.GetComponents<Component>())
+            {
+                if (component.GetType() == type)
+                {
+                    MethodInfo effectMethod = type.GetMethod("Effect");
 
-            MethodInfo effectMethod = type.GetMethod("Effect");
-
-            effectMethod.Invoke(scriptInstance, null);
-
+                    if (effectMethod == null)
+                        effectMethod.Invoke(component, null);
+                }
+            }
         }
         public void RemoveCardFromBoardSlot(CardWidget cardWidget)
         {
-            if(currentPlayer != opponent)
-            gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, PlayerGraveyard);
-            else
-            gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, OpponentGraveyard);
-            currentPlayer.RemovCard(cardWidget);
-            /*
-            Type type = Type.GetType(card.card.cardName);
-
-            GameObject newObject = new GameObject("ScriptInstanceObject");
-            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
-
-            MethodInfo effectMethod = type.GetMethod("EffectDead");
-
-            effectMethod.Invoke(scriptInstance, null);
-            */
-
+            var graveyard = currentPlayer == player ? OpponentGraveyard : PlayerGraveyard;
+            gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, graveyard);
         }
         public int[] CanAffordMana(Player player, int[] manaCost)
         {
@@ -448,7 +504,7 @@ namespace ShadowCraft
             switch(cardType.ToString())
             {
                 case "light":
-                    mastery[light]++;
+                    mastery[lightMana]++;
                     break;
                 case "fire":
                     mastery[fire]++;
@@ -508,7 +564,7 @@ namespace ShadowCraft
 
         public void SetManaTextValues(int[] values)
         {
-            lightText.text = "light: " + values[light].ToString();
+            lightText.text = "light: " + values[lightMana].ToString();
             fireText.text = "fire: " + values[fire].ToString();
             waterText.text = "water: " + values[water].ToString();
             natureText.text = "nature: " + values[nature].ToString();

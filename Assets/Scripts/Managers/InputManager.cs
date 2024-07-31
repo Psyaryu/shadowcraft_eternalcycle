@@ -9,6 +9,7 @@ namespace ShadowCraft
         public static InputManager shared = null;
 
         private CardWidget currentCard = null;
+        private CardWidget draggingCard = null;
         private BoardSlot boardSlot = null;
 
         private Vector3 LastPosition = Vector3.zero;
@@ -67,6 +68,9 @@ namespace ShadowCraft
             if (card == null)
                 card = hitInfo.collider.transform.parent.GetComponentInParent<CardWidget>();
 
+            if (card.isPlaced)
+                return;
+
             if (!IsHover)
             {
                 currentCard?.OnHoverExit();
@@ -82,6 +86,8 @@ namespace ShadowCraft
                 if (IsMouseDown)
                     card.OnClickRelease();
 
+                draggingCard = null;
+
                 IsMouseDown = false;
                 IsDragging = false;
                 return;
@@ -90,6 +96,7 @@ namespace ShadowCraft
             if (!IsDragging && !IsMouseDown)
             {
                 card.OnClick();
+                draggingCard = card;
                 IsMouseDown = true;
                 return;
             }
@@ -108,7 +115,11 @@ namespace ShadowCraft
                 return;
 
             LastPosition = location;
-            card.OnDrag(location);
+
+            if (draggingCard != null)
+                draggingCard.OnDrag(location);
+            else
+                card.OnDrag(location);
         }
 
         private void UpdateBoardSlot()

@@ -47,38 +47,17 @@ namespace ShadowCraft
         {
             if (Enum.TryParse(cardName, out Cards cardType))
             {
-                string className = cardType.ToString();
-                Type type = Type.GetType(className);
+                var cardWidget = Instantiate(GameManager.shared.cardPrefab, GameManager.shared.cardParent);
 
-                if (type != null)
+                var result = AttachCardToCardWidget(cardWidget, cardType);
+
+                if (!result)
                 {
-
-                    var cardWidget = Instantiate(GameManager.shared.cardPrefab, GameManager.shared.cardParent);
-
-                    // Create an instance of the card class
-                    MonoBehaviour cardInstance = cardWidget.gameObject.AddComponent(type) as MonoBehaviour;
-
-                    // Check if the instance has a 'ToCard' method
-                    MethodInfo toCardMethod = type.GetMethod("ToCard");
-                    if (toCardMethod != null)
-                    {
-                        Card cardObj = toCardMethod.Invoke(cardInstance, null) as Card;
-                        cardObj.startingAtk = cardObj.attack;
-                        cardObj.startingHealth = cardObj.health;
-
-                        cardWidget.card = cardObj;
-                        // Invoke the ToCard method and return the Card object
-                        return cardWidget;
-                    }   
-                    else
-                    {
-                        Debug.LogError($"{className} does not have a ToCard method.");
-                    }
+                    Debug.LogError($"{cardName} is not a valid card type.");
+                    return null;
                 }
-                else
-                {
-                    Debug.LogError($"Class for {className} not found.");
-                }
+
+                return cardWidget;
             }
             else
             {
@@ -87,6 +66,44 @@ namespace ShadowCraft
 
             return null;
         }
+
+        public static bool AttachCardToCardWidget(CardWidget cardWidget, Cards cards)
+        {
+            string className = cards.ToString();
+            Type type = Type.GetType(className);
+
+            if (type != null)
+            {
+
+                // Create an instance of the card class
+                MonoBehaviour cardInstance = cardWidget.gameObject.AddComponent(type) as MonoBehaviour;
+
+                // Check if the instance has a 'ToCard' method
+                MethodInfo toCardMethod = type.GetMethod("ToCard");
+                if (toCardMethod != null)
+                {
+                    Card cardObj = toCardMethod.Invoke(cardInstance, null) as Card;
+                    cardObj.startingAtk = cardObj.attack;
+                    cardObj.startingHealth = cardObj.health;
+
+                    cardWidget.card = cardObj;
+                    // Invoke the ToCard method and return the Card object
+
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError($"{className} does not have a ToCard method.");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Class for {className} not found.");
+            }
+
+            return false;
+        }
+    
 
         public void ResetCard()
         {
