@@ -167,7 +167,7 @@ namespace ShadowCraft
             Debug.Log("Start of Battle");
             // opponent.SetDeck();
             turnNumber = 0;
-
+            player.ShuffleDeck();
             RewardsGameObject.gameObject.SetActive(false);
             AudioManager.Instance.PlayBattleMusic();
 
@@ -225,7 +225,7 @@ namespace ShadowCraft
             yield return null;
         }
 
-        IEnumerator DrawPhase(Player player)
+        public IEnumerator DrawPhase(Player player)
         {
             var cardWidget = player.Draw();
 
@@ -286,13 +286,47 @@ namespace ShadowCraft
                 }
 
                 if(oppositeCard != null)
-                {
+                {  
+                    if(oppositeCard.card.Tags.Contains("Nightmare"))
+                    {
+                        if(gameBoardWidget.CardSlots[oppositeCard.card.boardSlot].GetCycleType() == BoardSlot.CycleType.Light)
+                        {
+                            oppositeCard.card.health -= card.card.attack;
+                        }
+                    }
+                    else if (card.card.Tags.Contains("Spirit"))
+                    {
+                        int randomNumber = UnityEngine.Random.Range(0, 5);
+                        int randomNumber2 = UnityEngine.Random.Range(0, 5);
+                        if(currentPlayer == player)
+                        {
+                                randomNumber = (randomNumber + 5) % 10;
+                            randomNumber2 = (randomNumber2 + 5) % 10;
+                        }
+                        if(randomNumber == 5)
+                        {
+                            gameBoardWidget.CardSlots[randomNumber2].card.card.health -= card.card.attack;
+                        }
+                        else if(randomNumber2 == 5)
+                        {
+                            gameBoardWidget.CardSlots[randomNumber].card.card.health -= card.card.attack;
+                        }
+                        else
+                        {
+                            gameBoardWidget.CardSlots[randomNumber2].card.card.health -= card.card.attack;
+                            gameBoardWidget.CardSlots[randomNumber].card.card.health -= card.card.attack;
+                        }
+                    }
+                    else
                     oppositeCard.card.health -= card.card.attack;
 
                     if (card.card.Tags.Contains("Splash"))
                     {
                         effectedCards.Clear();
                         effectedCards.Add(card);
+
+                        effectedSlots.Clear();
+                        effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
                         if((Oppositeslot != 0 )&&(Oppositeslot != 4 )&&(Oppositeslot != 5)&&(Oppositeslot != 9))
                         {
                             int left = Oppositeslot - 1;
@@ -350,6 +384,11 @@ namespace ShadowCraft
                     {
                         otherCharacter.TakeDamage(card.card.attack);
                     }
+                    if(card.card.Tags.Contains("Vampire"))
+                    {
+                        effectedSlots.Clear();
+                        effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
+                    }
 
                     Type type = Type.GetType(card.card.cardName);
 
@@ -403,6 +442,7 @@ namespace ShadowCraft
 
         public IEnumerator CardSelectFieldCor()
         {
+            yield return null;
             while (true)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -495,6 +535,23 @@ namespace ShadowCraft
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
 
+
+        IEnumerator Whirlpool(CardWidget cardWidget)
+        {
+            yield return CardSelectFieldCor();
+            yield return CardSelectFieldCor();
+
+            Type type = Type.GetType(cardWidget.card.cardName);
+
+            GameObject newObject = new GameObject("ScriptInstanceObject");
+            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+            MethodInfo effectMethod = type.GetMethod("Effect");
+            if (effectMethod != null)
+                effectMethod.Invoke(scriptInstance, null);
+
+            CheckDeath(cardWidget);
+        }
         #endregion
 
         #region Battle Utilities
@@ -502,6 +559,11 @@ namespace ShadowCraft
         {
             if (card.card.health <= 0)
             {
+                if(otherCharacter == null)
+                {
+                    currentPlayer.SendToGraveYard(card);
+                }
+                else
                 otherCharacter.SendToGraveYard(card);
                 effectedSlots.Clear();
                 effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
@@ -517,9 +579,17 @@ namespace ShadowCraft
 
                 int extraDamage = math.abs(card.card.health);
                 if (!card.card.Tags.Contains("Breath"))
-                    otherCharacter.TakeDamage(extraDamage);
+                {
+                    if (otherCharacter == null)
+                    {
+                       
+                    }
+                    else
+                        otherCharacter.TakeDamage(extraDamage);
+                }
             }
         }
+
         public void PositionHandCards()
         {
             var maxWidth = 11f; // board is 15, so 10 + card buffer
@@ -583,6 +653,13 @@ namespace ShadowCraft
 
             effectedSlots.Clear();
             effectedSlots.Add(boardSlot);
+
+            if (cardWidget.card.Tags.Contains("Whirlpool"))
+            {
+                effectedCards.Clear();
+                StartCoroutine(Whirlpool(cardWidget));
+                return;
+            }
             Type type = Type.GetType(cardWidget.card.cardName);
 
             GameObject newObject = new GameObject("ScriptInstanceObject");

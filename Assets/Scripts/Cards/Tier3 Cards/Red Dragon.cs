@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class RedDragon : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 7, 0, 0, 0, 0 };
     int health = 7;
     int attack = 0;
     string description = "Attack is the difference of light and dark spaces";
@@ -29,8 +29,6 @@ public class RedDragon : MonoBehaviour
         List<BoardSlot> slots = new List<BoardSlot>();
         foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
         {
-            if (slot.card != null)
-            {
                 if (slot.GetCycleType() == CycleType.Light)
                 {
                     light++;
@@ -39,7 +37,6 @@ public class RedDragon : MonoBehaviour
                 {
                     dark++;
                 }
-            }
         }
 
         int attack = Math.Abs(light - dark);

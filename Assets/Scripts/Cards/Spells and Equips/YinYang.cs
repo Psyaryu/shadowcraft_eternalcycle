@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class YinYang : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 2, 2, 0 };
     int health = 0;
     int attack = 0;
     string description = "Spell. 5 dmg to enemy if 50% or more of board dark, 5 healing to player if 50%+ light";
@@ -28,8 +28,6 @@ public class YinYang : MonoBehaviour
         List<BoardSlot> slots = new List<BoardSlot>();
         foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
         {
-            if (slot.card != null)
-            {
                 if (slot.GetCycleType() == CycleType.Light)
                 {
                     light++;
@@ -38,7 +36,6 @@ public class YinYang : MonoBehaviour
                 {
                     dark++;
                 }
-            }
         }
 
         if(light >= 5)
@@ -52,16 +49,7 @@ public class YinYang : MonoBehaviour
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
 
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
 
     }
 

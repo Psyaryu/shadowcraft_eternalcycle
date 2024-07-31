@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class ChaosBringer : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 3, 5, 0, 0, 0, 3 };
     int health = 4;
     int attack = 4;
     string description = "Swaps light and dark tiles for 1 turn, and attacks adjacet enemys for 50% damage";
@@ -24,7 +24,7 @@ public class ChaosBringer : MonoBehaviour
     public void Effect()
     {
         var effectedSlots = BattleManager.shared.effectedSlots;
-        effectedSlots[0].chaosBringerTurn = BattleManager.shared.turnNumber += 1;
+        effectedSlots[0].chaosBringerTurn = BattleManager.shared.turnNumber + 1;
         List<BoardSlot> slots = new List<BoardSlot>();
         foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
         {
@@ -32,7 +32,7 @@ public class ChaosBringer : MonoBehaviour
             {
                 slot.OnDark();
             }
-            if (slot.GetCycleType() == CycleType.Light)
+            else if (slot.GetCycleType() == CycleType.Shadow)
             {
                 slot.OnLight();
             }

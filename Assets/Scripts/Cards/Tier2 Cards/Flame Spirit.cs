@@ -6,15 +6,15 @@ using static ShadowCraft.Card;
 using System;
 using static ShadowCraft.BoardSlot;
 
-public class ShadowAssasin : MonoBehaviour
+public class FlameSpirit : MonoBehaviour
 {
-    int[] ManaCost = { 0, 2, 0, 0, 4, 2 };
+    int[] ManaCost = { 3, 1, 0, 2, 0, 0 };
     int health = 2;
-    int attack = 0;
-    string description = "+4/0 while on dark tile";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
-    string cardName = "ShadowAssasin";
-    List<string> Tags = new List<string> {"ShadowAssasin"};
+    int attack = 2;
+    string description = "Attacks two random opponents each turn";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "fire", true);
+    string cardName = "FlameSpirit";
+    List<string> Tags = new List<string> {"Spirit"};
 
     #region Effects
 
@@ -23,16 +23,15 @@ public class ShadowAssasin : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
-        if (effectedSlots[0].cycleType == CycleType.Shadow)
-        {
-            effectedSlots[0].card.card.attack += 4;
-        }
+       
+
+    }
+    public void EffectBattle()
+    {
+
     }
     public void EffectDeath()
     {
-       
-
     }
 
 

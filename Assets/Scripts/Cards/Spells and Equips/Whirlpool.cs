@@ -6,15 +6,15 @@ using static ShadowCraft.Card;
 using System;
 using static ShadowCraft.BoardSlot;
 
-public class DarkPact : MonoBehaviour
+public class Whirlpool : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 4 };
+    int[] ManaCost = { 0, 0, 0, 2, 2, 0 };
     int health = 0;
     int attack = 0;
-    string description = "Draw 2 cards and take 3 damage";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
-    string cardName = "DarkPact";
-    List<string> Tags = new List<string> {""};
+    string description = "Spell. Switch position of two cards on your side";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "Water", true);
+    string cardName = "Whirlpool";
+    List<string> Tags = new List<string> {"Whirlpool"};
 
     #region Effects
 
@@ -23,15 +23,27 @@ public class DarkPact : MonoBehaviour
     #endregion
     public void Effect()
     {
-   
-        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
-        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
+        var effectedCards = BattleManager.shared.effectedCards;
 
-        BattleManager.shared.currentPlayer.health -= 3;
+        if (effectedCards.Count < 2)
+            return;
+
+        var effect1 = effectedCards[0];
+        var effect2 = effectedCards[1];
+
+        if (effect1 == null || effect2 == null)
+            return;
+
+        int card1Slot = effect1.card.boardSlot;
+        int card2Slot = effect2.card.boardSlot;
+
+
+        BattleManager.shared.gameBoardWidget.SwapCards(card1Slot, card2Slot);
     }
+
     public void EffectDeath()
     {
-       
+        
 
     }
 

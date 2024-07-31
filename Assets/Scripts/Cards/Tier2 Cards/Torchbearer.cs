@@ -6,15 +6,15 @@ using static ShadowCraft.Card;
 using System;
 using static ShadowCraft.BoardSlot;
 
-public class ShadowAssasin : MonoBehaviour
+public class Torchbearer : MonoBehaviour
 {
-    int[] ManaCost = { 0, 2, 0, 0, 4, 2 };
+    int[] ManaCost = { 2, 3, 0, 0, 0, 0 };
     int health = 2;
-    int attack = 0;
-    string description = "+4/0 while on dark tile";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
-    string cardName = "ShadowAssasin";
-    List<string> Tags = new List<string> {"ShadowAssasin"};
+    int attack = 1;
+    string description = "Adds 1 torch to hand when played";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "fire", true);
+    string cardName = "Torchbearer";
+    List<string> Tags = new List<string> {""};
 
     #region Effects
 
@@ -23,16 +23,19 @@ public class ShadowAssasin : MonoBehaviour
     #endregion
     public void Effect()
     {
-        List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
-        if (effectedSlots[0].cycleType == CycleType.Shadow)
-        {
-            effectedSlots[0].card.card.attack += 4;
-        }
+        BattleManager.shared.currentPlayer.AddToDeck("Torch");
+        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
+
+       
+        BattleManager.shared.PositionHandCards();
+    }
+    public void EffectBattle()
+    {
+
     }
     public void EffectDeath()
     {
        
-
     }
 
 

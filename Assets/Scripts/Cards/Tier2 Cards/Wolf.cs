@@ -8,7 +8,7 @@ using Unity.Mathematics;
 
 public class Wolf : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 3, 2, 2, 0 };
     int health = 2;
     int attack = 1;
     string description = "Creature. +1/+0 for each creature in play";

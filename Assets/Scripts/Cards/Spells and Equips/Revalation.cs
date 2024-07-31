@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class Revalation : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 4, 0, 0, 0, 2 };
     int health = 0;
     int attack = 0;
     string description = "Draw a card for each light unit on a light tile";

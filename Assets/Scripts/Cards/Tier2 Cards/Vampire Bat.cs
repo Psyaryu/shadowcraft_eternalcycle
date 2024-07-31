@@ -6,15 +6,15 @@ using static ShadowCraft.Card;
 using System;
 using static ShadowCraft.BoardSlot;
 
-public class ShadowAssasin : MonoBehaviour
+public class VampireBat : MonoBehaviour
 {
-    int[] ManaCost = { 0, 2, 0, 0, 4, 2 };
-    int health = 2;
-    int attack = 0;
-    string description = "+4/0 while on dark tile";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
-    string cardName = "ShadowAssasin";
-    List<string> Tags = new List<string> {"ShadowAssasin"};
+    int[] ManaCost = { 0, 0, 2, 0, 3, 2 };
+    int health = 3;
+    int attack = 2;
+    string description = "Creature. Heals for damage done in dark ";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
+    string cardName = "VampireBat";
+    List<string> Tags = new List<string> {"Vampire"};
 
     #region Effects
 
@@ -23,15 +23,15 @@ public class ShadowAssasin : MonoBehaviour
     #endregion
     public void Effect()
     {
+       
+    }
+    public void EffectBattle()
+    {
         List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
         if (effectedSlots[0].cycleType == CycleType.Shadow)
         {
-            effectedSlots[0].card.card.attack += 4;
+            effectedSlots[0].card.card.health += Math.Clamp(effectedSlots[0].card.card.attack, 1, 3);
         }
-    }
-    public void EffectDeath()
-    {
-       
 
     }
 

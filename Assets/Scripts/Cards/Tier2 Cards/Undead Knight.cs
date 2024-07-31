@@ -6,14 +6,14 @@ using static ShadowCraft.Card;
 using System;
 using static ShadowCraft.BoardSlot;
 
-public class ShadowAssasin : MonoBehaviour
+public class UndeadKnight : MonoBehaviour
 {
-    int[] ManaCost = { 0, 2, 0, 0, 4, 2 };
-    int health = 2;
-    int attack = 0;
-    string description = "+4/0 while on dark tile";
+    int[] ManaCost = { 0, 0, 0, 0, 0, 5 };
+    int health = 5;
+    int attack = 3;
+    string description = "-1 health if placed in light";
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
-    string cardName = "ShadowAssasin";
+    string cardName = "UndeadKnight";
     List<string> Tags = new List<string> {"ShadowAssasin"};
 
     #region Effects
@@ -24,9 +24,9 @@ public class ShadowAssasin : MonoBehaviour
     public void Effect()
     {
         List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
-        if (effectedSlots[0].cycleType == CycleType.Shadow)
+        if (effectedSlots[0].cycleType == CycleType.Light)
         {
-            effectedSlots[0].card.card.attack += 4;
+            effectedSlots[0].card.card.health -= 1;
         }
     }
     public void EffectDeath()

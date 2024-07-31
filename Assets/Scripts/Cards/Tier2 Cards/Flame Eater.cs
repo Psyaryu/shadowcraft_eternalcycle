@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class FlameEater : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 2, 0, 0, 2, 3 };
     int health = 3;
     int attack = 1;
     string description = "Attacks both opposing card and player";
