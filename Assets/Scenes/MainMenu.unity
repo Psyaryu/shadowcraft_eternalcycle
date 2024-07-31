@@ -1171,7 +1171,7 @@ AudioSource:
   m_GameObject: {fileID: 1523311196}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 8561216839771064391, guid: 4d32742b3190c0c4685b1c2462e0af0d, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1273,7 +1273,6 @@ MonoBehaviour:
   Audiosource: {fileID: 1523311197}
   battleLightAudioSource: {fileID: 2072198334}
   battleDarkAudioSource: {fileID: 356625744}
-  Audiomixer: {fileID: 24100000, guid: 4d32742b3190c0c4685b1c2462e0af0d, type: 2}
 --- !u!4 &1523311199
 Transform:
   m_ObjectHideFlags: 0
