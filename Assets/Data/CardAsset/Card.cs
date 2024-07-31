@@ -28,7 +28,10 @@ namespace ShadowCraft
             Wolf,
             Treant,
             ChaosBringer,
-            RedDragon
+            RedDragon,
+            Torchbearer,
+            UndeadKnight,
+            VampireBat,
 
 
         }

@@ -288,6 +288,9 @@ namespace ShadowCraft
                     {
                         effectedCards.Clear();
                         effectedCards.Add(card);
+
+                        effectedSlots.Clear();
+                        effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
                         if((Oppositeslot != 0 )&&(Oppositeslot != 4 )&&(Oppositeslot != 5)&&(Oppositeslot != 9))
                         {
                             int left = Oppositeslot - 1;
@@ -344,6 +347,11 @@ namespace ShadowCraft
                     if(card.card.Tags.Contains("Breath"))
                     {
                         otherCharacter.TakeDamage(card.card.attack);
+                    }
+                    if(card.card.Tags.Contains("Vampire"))
+                    {
+                        effectedSlots.Clear();
+                        effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
                     }
 
                     Type type = Type.GetType(card.card.cardName);
