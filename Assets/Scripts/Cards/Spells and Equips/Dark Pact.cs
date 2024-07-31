@@ -4,16 +4,17 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using static ShadowCraft.BoardSlot;
 
-public class Druid : MonoBehaviour
+public class DarkPact : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 4;
+    int health = 0;
     int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
-    string cardName = "Druid";
-    List<string> Tags = new List<string> {"Creature"};
+    string description = "Draw 2 cards and take 3 damage";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "shadow", true);
+    string cardName = "DarkPact";
+    List<string> Tags = new List<string> {""};
 
     #region Effects
 
@@ -22,21 +23,14 @@ public class Druid : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = true;
-        BattleManager.shared.gameBoardWidget.UpdateEffects();
+        BattleManager.shared.currentPlayer.Draw();
+        BattleManager.shared.currentPlayer.Draw();
+
+        BattleManager.shared.currentPlayer.health -= 3;
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
+       
 
     }
 

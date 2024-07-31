@@ -19,7 +19,17 @@ namespace ShadowCraft
             Bear,
             Druid,
             FlameEater,
-            Torch
+            Torch,
+            DarkRitual,
+            YinYang,
+            ShadowAssasin,
+            DarkPact,
+            Revalation,
+            Wolf,
+            Treant,
+            ChaosBringer,
+            RedDragon
+
 
         }
         public enum ManaTypes

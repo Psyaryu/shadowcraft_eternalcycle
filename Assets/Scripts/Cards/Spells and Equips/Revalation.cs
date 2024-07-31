@@ -4,16 +4,17 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using static ShadowCraft.BoardSlot;
 
-public class Druid : MonoBehaviour
+public class Revalation : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 4;
+    int health = 0;
     int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
-    string cardName = "Druid";
-    List<string> Tags = new List<string> {"Creature"};
+    string description = "Draw a card for each light unit on a light tile";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "light", true);
+    string cardName = "Revalation";
+    List<string> Tags = new List<string> {""};
 
     #region Effects
 
@@ -22,21 +23,26 @@ public class Druid : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = true;
-        BattleManager.shared.gameBoardWidget.UpdateEffects();
+        int count = 0;
+        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+        {
+            if (slot.card != null)
+            {
+                if (slot.card.card.cardType == ManaTypes.light && slot.GetCycleType() == CycleType.Light)
+                {
+                    count++;
+                }
+            }
+        }
+
+        for(int i = 0; i < count; i++)
+        {
+          BattleManager.shared.currentPlayer.Draw();
+        }
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
+       
 
     }
 

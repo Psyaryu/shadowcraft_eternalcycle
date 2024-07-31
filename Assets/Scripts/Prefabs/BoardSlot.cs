@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +50,8 @@ namespace ShadowCraft
         public CardWidget card = null;
 
         public int torchTurn = 0;
+        public int chaosBringerTurn = 0;
+        public bool redDragon = false;
 
         public void SetCard(CardWidget card) => this.card = card;
 
@@ -104,6 +107,41 @@ namespace ShadowCraft
                 {
                     this.OnDark();
                 }
+            }
+            if (chaosBringerTurn == BattleManager.shared.turnNumber)
+            {
+                foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+                {
+                    if (slot.GetCycleType() == CycleType.Light)
+                    {
+                        slot.OnDark();
+                    }
+                    if (slot.GetCycleType() == CycleType.Light)
+                    {
+                        slot.OnLight();
+                    }
+                }
+            }
+            if (redDragon == true)
+            {
+
+                int light1 = 0;
+                int dark1 = 0;
+                foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+                {
+                   
+                        if (slot.GetCycleType() == CycleType.Light)
+                        {
+                            light1++;
+                        }
+                        if (slot.GetCycleType() == CycleType.Shadow)
+                        {
+                            dark1++;
+                        }
+                }
+
+                int attack = Math.Abs(light1 - dark1);
+                this.card.card.attack = attack;
             }
         }
         public bool GetIsFilled() => card != null;

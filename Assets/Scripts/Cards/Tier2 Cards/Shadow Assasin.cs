@@ -4,16 +4,17 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using static ShadowCraft.BoardSlot;
 
-public class Druid : MonoBehaviour
+public class ShadowAssasin : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 4;
+    int health = 2;
     int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
-    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
-    string cardName = "Druid";
-    List<string> Tags = new List<string> {"Creature"};
+    string description = "+4/0 while on dark tile";
+    ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "death", true);
+    string cardName = "ShadowAssasin";
+    List<string> Tags = new List<string> {"ShadowAssasin"};
 
     #region Effects
 
@@ -22,21 +23,15 @@ public class Druid : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = true;
-        BattleManager.shared.gameBoardWidget.UpdateEffects();
+        List<BoardSlot> effectedSlots = BattleManager.shared.effectedSlots;
+        if (effectedSlots[0].cycleType == CycleType.Shadow)
+        {
+            effectedSlots[0].card.card.attack += 4;
+        }
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
+       
 
     }
 

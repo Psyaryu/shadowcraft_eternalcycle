@@ -184,6 +184,19 @@ namespace ShadowCraft
             if(player != opponent)
             SetManaTextValues(player.currentMana);
 
+           var slots = gameBoardWidget.GetSlotsofTag("ShadowAssasin");
+            foreach(var slot in slots)
+            {
+                Type type = Type.GetType(slot.card.card.cardName);
+
+                GameObject newObject = new GameObject("ScriptInstanceObject");
+                MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+                MethodInfo effectMethod = type.GetMethod("Effect");
+                if (effectMethod != null)
+                    effectMethod.Invoke(scriptInstance, null);
+            }
+
             player.finishedStandBy = false;
 
             yield return null;
@@ -257,7 +270,7 @@ namespace ShadowCraft
                     {
                         effectedCards.Clear();
                         effectedCards.Add(card);
-                        if(!(Oppositeslot != 0 || Oppositeslot != 4 || Oppositeslot != 5 || Oppositeslot != 9))
+                        if((Oppositeslot != 0 )&&(Oppositeslot != 4 )&&(Oppositeslot != 5)&&(Oppositeslot != 9))
                         {
                             int left = Oppositeslot - 1;
                             int right = Oppositeslot + 1;
@@ -418,6 +431,7 @@ namespace ShadowCraft
                 otherCharacter.SendToGraveYard(card);
                 effectedSlots.Clear();
                 effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
+                RemoveCardFromBoardSlot(card);
                 Type type1 = Type.GetType(card.card.cardName);
 
                 GameObject newObject1 = new GameObject("ScriptInstanceObject");

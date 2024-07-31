@@ -4,6 +4,7 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using System.Linq;
 
 public class DarkRitual : MonoBehaviour
 {
@@ -50,21 +51,20 @@ public class DarkRitual : MonoBehaviour
         }
         else
         {
+            System.Random random = new System.Random();
+            var listtemp = cardWidgets.OrderBy(x => random.Next()).Take(3).ToList();
 
+            foreach (var card in listtemp)
+            {
+                card.card.health -= 2;
+
+                BattleManager.shared.CheckDeath(card);
+            }
         }
     }
     public void EffectDeath()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
-        {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
-        }
+       
 
     }
 

@@ -78,10 +78,12 @@ namespace ShadowCraft
             List<BoardSlot> slots = new List<BoardSlot>();
             foreach (var slot in CardSlots)
             {
-                
-                if (slot.card.card.Tags.Contains(tag))
+                if (slot.card != null)
                 {
-                    slots.Add(slot);
+                    if (slot.card.card.Tags.Contains(tag))
+                    {
+                        slots.Add(slot);
+                    }
                 }
             }
 

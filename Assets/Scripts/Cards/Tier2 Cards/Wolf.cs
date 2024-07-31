@@ -4,16 +4,18 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using Unity.Mathematics;
 
-public class Druid : MonoBehaviour
+public class Wolf : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 4;
-    int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
+    int health = 2;
+    int attack = 1;
+    string description = "Creature. +1/+0 for each creature in play";
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
-    string cardName = "Druid";
-    List<string> Tags = new List<string> {"Creature"};
+    string cardName = "Wolf";
+    List<string> Tags = new List<string> {  "Creature" };
+
 
     #region Effects
 
@@ -22,23 +24,20 @@ public class Druid : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = true;
-        BattleManager.shared.gameBoardWidget.UpdateEffects();
-    }
-    public void EffectDeath()
-    {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+       var effectedSlots = BattleManager.shared.effectedSlots;
+       var slots = BattleManager.shared.gameBoardWidget.GetSlotsofTag("Creature");
+        
+        foreach (var slot in slots)
         {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
+            effectedSlots[0].card.card.attack += 1;
         }
-
     }
+
+    public void EffectAttack()
+    {
+       
+    }
+
 
 
     #region Conversion

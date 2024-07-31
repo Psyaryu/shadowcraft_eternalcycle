@@ -4,16 +4,18 @@ using UnityEngine;
 using ShadowCraft;
 using static ShadowCraft.Card;
 using System;
+using Unity.Mathematics;
 
-public class Druid : MonoBehaviour
+public class Treant : MonoBehaviour
 {
     int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
-    int health = 4;
-    int attack = 0;
-    string description = "Creature. Raises all creture's attack by 2";
+    int health = 2;
+    int attack = 2;
+    string description = "Creature. +0/+3 when played on a light tile";
     ManaTypes cardType = (ManaTypes)Enum.Parse(typeof(ManaTypes), "nature", true);
-    string cardName = "Druid";
+    string cardName = "Treant";
     List<string> Tags = new List<string> {"Creature"};
+
 
     #region Effects
 
@@ -22,23 +24,19 @@ public class Druid : MonoBehaviour
     #endregion
     public void Effect()
     {
-        BattleManager.shared.gameBoardWidget.DruidActive = true;
-        BattleManager.shared.gameBoardWidget.UpdateEffects();
-    }
-    public void EffectDeath()
-    {
-        BattleManager.shared.gameBoardWidget.DruidActive = false;
-        foreach (var slot in BattleManager.shared.gameBoardWidget.CardSlots)
+       var effectedSlots = BattleManager.shared.effectedSlots;
+       
+        if (effectedSlots[0].GetCycleType() == BoardSlot.CycleType.Light)
         {
-
-            if (slot.card.card.Tags.Contains("Creature"))
-            {
-                slot.card.card.attack--;
-                slot.card.card.DruidActive = false;
-            }
+            effectedSlots[0].card.card.health += 3;
         }
-
     }
+
+    public void EffectAttack()
+    {
+        
+    }
+
 
 
     #region Conversion
