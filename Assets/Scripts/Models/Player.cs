@@ -22,6 +22,8 @@ namespace ShadowCraft
         public bool finishedStandBy = false;
         public int identity = 1;
 
+        List<string> AddedCards = new List<string>();
+
         public Player(CharacterAsset characterAsset)
         {
             character = characterAsset;
@@ -35,6 +37,7 @@ namespace ShadowCraft
         virtual public void SetDeck()
         {
             StartingDecksManager.shared.SetBasePlayerDeck(this);
+            ShuffleDeck();
         }
 
 
@@ -99,7 +102,8 @@ namespace ShadowCraft
         public void PlayCard(CardWidget cardWidget)
         {
             field.Add(cardWidget);
-            hand.Remove(cardWidget);
+            var handIndex = hand.FindIndex(Card => Card.card == cardWidget.card);
+            hand.RemoveAt(handIndex);
             cardWidget.isPlaced = true;
         }
 
@@ -162,6 +166,18 @@ namespace ShadowCraft
             currentMana = new int[] { 0, 0, 0, 0, 0, 0 };
             elementalMastery = new int[] { 0, 0, 0, 0, 0, 0 };
             manaProductionRate = SetProductionRate();
+
+            deck.Clear();
+            hand.Clear();
+            graveyard.Clear();
+            field.Clear();
+
+            SetDeck();
+            LoadRewardCards();
         }
+
+        public void AddReward(CardWidget cardWidget) => AddedCards.Add(cardWidget.card.cardName);
+
+        private void LoadRewardCards() => AddedCards.ForEach(Reward => AddToDeck(Reward));
     }
 }

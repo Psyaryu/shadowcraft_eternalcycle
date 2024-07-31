@@ -38,6 +38,12 @@ public class Bear : MonoBehaviour
         {
             if (i != 0)
             {
+                var effect1 = effectedCards[i];
+                var firstEffect = effectedCards[0];
+
+                if (effect1 == null || firstEffect == null)
+                    continue;
+
                 effectedCards[i].card.health -= (effectedCards[0].card.attack) / 2;
                 BattleManager.shared.CheckDeath(effectedCards[i]);
 

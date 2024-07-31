@@ -46,17 +46,19 @@ namespace ShadowCraft
             StartCoroutine(AudioManager.Instance.PlayFadeOutAudio());
 
             var startTime = Time.time;
-            var endTime = startTime + 1f;
+            var endTime = startTime + 0.5f;
 
             while (Time.time < endTime)
             {
                 var t = (Time.time - startTime) / endTime;
 
-             //s   canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+                Debug.Log($"{t}");
+
+                canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
                 yield return null;
             }
 
-            canvasGroup.alpha = 1f;
+            canvasGroup.alpha = 0f;
 
             SceneManager.LoadScene("BattleScene", LoadSceneMode.Single);
         }
