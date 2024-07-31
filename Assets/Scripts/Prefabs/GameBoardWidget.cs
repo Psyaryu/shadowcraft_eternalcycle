@@ -101,8 +101,12 @@ namespace ShadowCraft
         {
             var cardWidget = cards[slot];
             player.SendToGraveYard(cardWidget);
-            cardWidget.transform.parent = graveyard;
-            cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
+
+            if (cardWidget != null && cardWidget.transform != null)
+            {
+                cardWidget.transform.parent = graveyard;
+                cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
+            }
 
             CardSlots[slot].SetCard(null);
 

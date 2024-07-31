@@ -19,8 +19,6 @@ namespace ShadowCraft
         public int[] currentMana = { 0, 0, 0, 0, 0, 0 };
         public int[] elementalMastery = { 0, 0, 0, 0, 0, 0 };
 
-        string playerClass = null;
-
         public bool finishedStandBy = false;
         public int identity = 1;
 
@@ -36,7 +34,6 @@ namespace ShadowCraft
         
         virtual public void SetDeck()
         {
-            
             StartingDecksManager.shared.SetBasePlayerDeck(this);
         }
 
@@ -54,8 +51,8 @@ namespace ShadowCraft
             }
             //TODO: Add statment to set production rate dependant on class?
        
-            int[] defaultrate = { 0,0,0,0,0,0};
-            return defaultrate;
+            //int[] defaultrate = { 0,0,0,0,0,0};
+            //return defaultrate;
         }
 
         virtual public void AddToDeck(string cardType)
@@ -66,6 +63,11 @@ namespace ShadowCraft
             {
                 deck.Add(newCard);
             }
+        }
+
+        public void AddToDeck(CardWidget newCard)
+        {
+            deck.Add(newCard);
         }
 
         virtual public CardWidget Draw()
@@ -98,11 +100,13 @@ namespace ShadowCraft
         {
             field.Add(cardWidget);
             hand.Remove(cardWidget);
+            cardWidget.isPlaced = true;
         }
 
         public void RemovCard(CardWidget cardWidget)
         {
             field.Remove(cardWidget);
+            cardWidget.isPlaced = false;
         }
 
         public void SendToGraveYard(CardWidget cardWidget)
@@ -127,7 +131,10 @@ namespace ShadowCraft
 
         public void ShuffleGraveYard()
         {
-            deck.AddRange(graveyard);
+            var graveyardCards = graveyard.FindAll(Card => Card != null);
+            graveyardCards.ForEach(Card => Card.ResetCard());
+            deck.AddRange(graveyardCards);
+
             ShuffleDeck();
 
             graveyard.Clear();
@@ -148,6 +155,13 @@ namespace ShadowCraft
         }
 
         public bool IsDead() => health <= 0;
-    }
 
+        public void Reset()
+        {
+            health = character.health;
+            currentMana = new int[] { 0, 0, 0, 0, 0, 0 };
+            elementalMastery = new int[] { 0, 0, 0, 0, 0, 0 };
+            manaProductionRate = SetProductionRate();
+        }
+    }
 }
