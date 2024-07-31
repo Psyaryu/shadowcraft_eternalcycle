@@ -140,7 +140,8 @@ namespace ShadowCraft
         IEnumerator StartOfBattle()
         {
             Debug.Log("Start of Battle");
-           // opponent.SetDeck();
+
+            AudioManager.Instance.PlayBattleMusic();
             yield return null;
         }
 
@@ -148,11 +149,18 @@ namespace ShadowCraft
         {
             cycleIndexStart = ((cycleIndexStart - 1) + lightDarkCycle.Count) % lightDarkCycle.Count;
 
+            var cycleCounts = new Dictionary<BoardSlot.CycleType, int>();
+            cycleCounts[BoardSlot.CycleType.Light] = 0;
+            cycleCounts[BoardSlot.CycleType.Shadow] = 0;
+
             for (int i = 0; i < gameBoardWidget.numberOfCardSlots * 2; i++)
             {
                 var cycleIndex = (cycleIndexStart + i % gameBoardWidget.numberOfCardSlots) % lightDarkCycle.Count;
                 gameBoardWidget.SetCycle(lightDarkCycle[cycleIndex], i);
+                cycleCounts[lightDarkCycle[cycleIndex]] = cycleCounts[lightDarkCycle[cycleIndex]] + 1;
             }
+
+            AudioManager.Instance.AdjustBattleMusic(cycleCounts[BoardSlot.CycleType.Light], cycleCounts[BoardSlot.CycleType.Shadow]);
 
             yield return null;
         }
@@ -196,7 +204,6 @@ namespace ShadowCraft
                 //cardWidget.card = card;
 
                 cardWidget.transform.parent = handParentEnemy;
-
             }
         }
 
@@ -233,7 +240,6 @@ namespace ShadowCraft
                 {
                     oppositeCard = null;
                 }
-                
 
                 if(oppositeCard != null)
                 {
@@ -293,8 +299,14 @@ namespace ShadowCraft
         IEnumerator EndOfBattle()
         {
             Debug.Log("End of Battle");
+            
+            yield return TransitionToMainMenu();
+        }
+
+        IEnumerator TransitionToMainMenu()
+        {
+            yield return AudioManager.Instance.FadeOutBattle();
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-            yield return null;
         }
 
         #endregion
@@ -307,7 +319,7 @@ namespace ShadowCraft
             var sectionWidth = 2.5f; // card size
             var totalCards = Mathf.Floor(maxWidth / sectionWidth) + 1;
 
-            var yPosition = handParent.position.y;
+            //var yPosition = handParent.position.y;
 
             var shiftAmount = Mathf.Min((handParent.childCount - 1) / 2f * sectionWidth, maxWidth / 2f);
 
@@ -319,7 +331,7 @@ namespace ShadowCraft
                 var xPosition = i * sectionWidth - shiftAmount - flexShift;
 
                 var cardTransform = handParent.GetChild(i);
-                cardTransform.position = new Vector3(xPosition, yPosition, -(i / 100f));
+                cardTransform.localPosition = new Vector3(xPosition, 0, -(i / 100f));
             }
         }
 
@@ -489,7 +501,7 @@ namespace ShadowCraft
         public void OnMainMenu()
         {
             battleRunning = false;
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            StartCoroutine(TransitionToMainMenu());
         }
 
         public void OnEndTurn()
