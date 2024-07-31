@@ -281,7 +281,15 @@ namespace ShadowCraft
                 }
 
                 if(oppositeCard != null)
-                {
+                {  
+                    if(oppositeCard.card.Tags.Contains("Nightmare"))
+                    {
+                        if(gameBoardWidget.CardSlots[oppositeCard.card.boardSlot].GetCycleType() == BoardSlot.CycleType.Light)
+                        {
+                            oppositeCard.card.health -= card.card.attack;
+                        }
+                    }
+                    else
                     oppositeCard.card.health -= card.card.attack;
 
                     if (card.card.Tags.Contains("Splash"))
@@ -581,6 +589,15 @@ namespace ShadowCraft
 
             effectedSlots.Clear();
             effectedSlots.Add(boardSlot);
+
+            if (cardWidget.card.Tags.Contains("Whirlpool"))
+            {
+                effectedCards.Clear();
+                StartCoroutine(CardSelectFieldCor());
+                StartCoroutine(CardSelectFieldCor());
+
+
+            }
             Type type = Type.GetType(cardWidget.card.cardName);
 
             GameObject newObject = new GameObject("ScriptInstanceObject");

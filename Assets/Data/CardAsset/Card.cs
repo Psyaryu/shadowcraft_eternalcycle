@@ -32,6 +32,8 @@ namespace ShadowCraft
             Torchbearer,
             UndeadKnight,
             VampireBat,
+            Paladin,
+            Whirlpool,
 
 
         }
