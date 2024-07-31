@@ -97,6 +97,24 @@ namespace ShadowCraft
             cards[fromSlot] = null;
         }
 
+        public void SwapCards(int slot1, int slot2)
+        {
+            var firstPosition = cards[slot1].transform.localPosition;
+            var secondPosition = cards[slot2].transform.localPosition;
+
+            cards[slot1].transform.parent = CardSlots[slot2].transform;
+            cards[slot2].transform.parent = CardSlots[slot1].transform;
+
+            var first = cards[slot1];
+            var second = cards[slot2];
+
+            cards[slot2] = first;
+            cards[slot1] = second;
+
+            cards[slot2].transform.localPosition = secondPosition;
+            cards[slot1].transform.localPosition = firstPosition;
+        }
+
         public void RemoveCard(int slot, Player player, Transform graveyard)
         {
             var cardWidget = cards[slot];

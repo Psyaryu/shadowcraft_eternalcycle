@@ -414,6 +414,7 @@ namespace ShadowCraft
 
         public IEnumerator CardSelectFieldCor()
         {
+            yield return null;
             while (true)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -505,6 +506,23 @@ namespace ShadowCraft
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
 
+
+        IEnumerator Whirlpool(CardWidget cardWidget)
+        {
+            yield return CardSelectFieldCor();
+            yield return CardSelectFieldCor();
+
+            Type type = Type.GetType(cardWidget.card.cardName);
+
+            GameObject newObject = new GameObject("ScriptInstanceObject");
+            MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
+
+            MethodInfo effectMethod = type.GetMethod("Effect");
+            if (effectMethod != null)
+                effectMethod.Invoke(scriptInstance, null);
+
+            CheckDeath(cardWidget);
+        }
         #endregion
 
         #region Battle Utilities
@@ -593,10 +611,8 @@ namespace ShadowCraft
             if (cardWidget.card.Tags.Contains("Whirlpool"))
             {
                 effectedCards.Clear();
-                StartCoroutine(CardSelectFieldCor());
-                StartCoroutine(CardSelectFieldCor());
-
-
+                StartCoroutine(Whirlpool(cardWidget));
+                return;
             }
             Type type = Type.GetType(cardWidget.card.cardName);
 

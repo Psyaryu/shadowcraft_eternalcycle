@@ -27,11 +27,14 @@ public class StartingDecksManager : MonoBehaviour
 
     public void SetBasePlayerDeck(Player player)
     {
-        player.AddToDeck("Bear");
-        player.AddToDeck("Druid");
-        player.AddToDeck("Torch");
-        player.AddToDeck("FlameEater");
-        player.AddToDeck("Bear");
+        player.AddToDeck("Whirlpool");
         player.AddToDeck("SoldierofRain");
+        player.AddToDeck("Bear");
+        player.AddToDeck("Whirlpool");
+        player.AddToDeck("SoldierofLight");
+        player.AddToDeck("SoldierofShadows");
+        player.AddToDeck("Whirlpool");
+        player.AddToDeck("SoldierofNature");
+        player.AddToDeck("SoldierofFlames");
     }
 }

@@ -23,13 +23,24 @@ public class Whirlpool : MonoBehaviour
     #endregion
     public void Effect()
     {
-     var effectedCards = BattleManager.shared.effectedCards;
-     int card1Slot = effectedCards[0].card.boardSlot;
-     int  card2Slot = effectedCards[1].card.boardSlot;
+        var effectedCards = BattleManager.shared.effectedCards;
 
-     BattleManager.shared.gameBoardWidget.MoveCard(card1Slot, card2Slot);
-     BattleManager.shared.gameBoardWidget.MoveCard(card2Slot, card1Slot);
+        if (effectedCards.Count < 2)
+            return;
+
+        var effect1 = effectedCards[0];
+        var effect2 = effectedCards[1];
+
+        if (effect1 == null || effect2 == null)
+            return;
+
+        int card1Slot = effect1.card.boardSlot;
+        int card2Slot = effect2.card.boardSlot;
+
+
+        BattleManager.shared.gameBoardWidget.SwapCards(card1Slot, card2Slot);
     }
+
     public void EffectDeath()
     {
         
