@@ -6,38 +6,57 @@ namespace ShadowCraft
     public class CardWidget : MonoBehaviour
     {
         public Card card { get; set; }
-        private TMP_Text attack;
-        private TMP_Text health;
-        private TMP_Text cardName;
-        private TMP_Text mana1;
-        private TMP_Text mana2;
-        private TMP_Text mana3;
-        private TMP_Text description;
         public bool isPlaced = false;
         private string[] manaTypes = { "Light", "Fire", "Water", "Nature", "Shadow", "Death" };
+        private Color[] manaColors = { new Color(1f, 1f, 273f/255f, 1f), Color.red, Color.cyan, Color.green, Color.gray, Color.black };
+
+
+
+        [SerializeField]
+        TextMeshProUGUI attackText = null;
+
+        [SerializeField]
+        TextMeshProUGUI healthText = null;
+
+        [SerializeField]
+        TextMeshProUGUI cardNameText = null;
+
+        [SerializeField]
+        TextMeshProUGUI mana1Text = null;
+
+        [SerializeField]
+        TextMeshProUGUI mana2Text = null;
+
+        [SerializeField]
+        TextMeshProUGUI mana3Text = null;
+
+        [SerializeField]
+        TextMeshProUGUI descriptionText = null;
 
         private void Start()
         {
-            if (transform.Find("Attack") != null)
-            {
-                attack = transform.Find("Attack").GetComponent<TMP_Text>();
-                health = transform.Find("Health").GetComponent<TMP_Text>();
-                cardName = transform.Find("Name").GetComponent<TMP_Text>();
-                Transform manaTransform = transform.Find("Mana");
-                mana1 = manaTransform.Find("Mana1").GetComponent<TMP_Text>();
-                mana2 = manaTransform.Find("Mana2").GetComponent<TMP_Text>();
-                mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
-                description = transform.Find("Description").GetComponent<TMP_Text>();
+            manaColors = new Color[] {
+                new Color(1f, 1f, 173f / 255f, 1f),
+                FromRGB(242, 125,12),
+                FromRGB(90, 188,216),
+                FromRGB(74, 0,65),
+                FromRGB(35, 188,115),
+                FromRGB(69, 18,8),
+            };
 
-                if (card != null)
-                {
-                    attack.text = card.attack.ToString();
-                    health.text = card.health.ToString();
-                    cardName.text = card.cardName;
-                    description.text = card.description.ToString();
-                    SetMana();
-                }
+            if (card != null)
+            {
+                attackText.text = card.attack.ToString();
+                healthText.text = card.health.ToString();
+                cardNameText.text = card.cardName;
+                descriptionText.text = card.description.ToString();
+                SetMana();
             }
+        }
+
+        private Color FromRGB(float red, float green, float blue)
+        {
+            return new Color(red / 255f, blue / 255f, green / 255f, 1f);
         }
 
         private void Update()
@@ -45,30 +64,29 @@ namespace ShadowCraft
             if (card == null)
                 return;
 
-            if (transform.Find("Attack") != null)
+            if (card.IsSpell())
             {
-                //attack = transform.Find("Attack").GetComponent<TMP_Text>();
-                //health = transform.Find("Health").GetComponent<TMP_Text>();
-                //cardName = transform.Find("Name").GetComponent<TMP_Text>();
-                //Transform manaTransform = transform.Find("Mana");
-                //mana1 = manaTransform.Find("Mana1").GetComponent<TMP_Text>();
-                //mana2 = manaTransform.Find("Mana2").GetComponent<TMP_Text>();
-                //mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
-                //description = transform.Find("Description").GetComponent<TMP_Text>();
-
-                attack.text = card.attack.ToString();
-                health.text = card.health.ToString();
-                cardName.text = card.cardName;
-                description.text = card.description.ToString();
-                SetMana();
+                attackText.gameObject.SetActive(false);
+                healthText.gameObject.SetActive(false);
             }
-         
+            else
+            {
+                attackText.gameObject.SetActive(true);
+                healthText.gameObject.SetActive(true);
+                attackText.text = card.attack.ToString();
+                healthText.text = card.health.ToString();
+            }
+
+            cardNameText.text = card.cardName;
+            descriptionText.text = card.description.ToString();
+            SetMana();         
         }
+
         public void SetMana()
         {
             var manaCosts = this.card.manaCost;
 
-            TMP_Text[] manaTexts = { mana1, mana2, mana3 };
+            TextMeshProUGUI[] manaTexts = { mana1Text, mana2Text, mana3Text };
             foreach (var text in manaTexts)
             {
                 text.text = "";
@@ -82,6 +100,8 @@ namespace ShadowCraft
                     if (manaIndex < manaTexts.Length)
                     {
                         manaTexts[manaIndex].text = $"{manaTypes[i]}: {manaCosts[i]}";
+                        
+                        manaTexts[manaIndex].colorGradient = new VertexGradient(manaColors[manaIndex], Color.white, manaColors[manaIndex], Color.white);
                         manaIndex++;
                     }
                 }

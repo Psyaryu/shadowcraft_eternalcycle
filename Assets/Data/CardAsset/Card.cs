@@ -128,5 +128,7 @@ namespace ShadowCraft
             attack = startingAtk;
             health = startingHealth;
         }
+
+        public bool IsSpell() => attack == 0 && health == 0;
     }
 }

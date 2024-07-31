@@ -145,7 +145,10 @@ namespace ShadowCraft
                 { 
                     currentPlayer = character;
                     yield return StartOfTurn(character);
-                    yield return DrawPhase(character);
+
+                    for (int i = character.hand.Count; i < 5; i++)
+                        yield return DrawPhase(character);
+
                     yield return StandbyPhase(character);
                     yield return BattlePhase(character);
 
@@ -167,6 +170,8 @@ namespace ShadowCraft
 
             RewardsGameObject.gameObject.SetActive(false);
             AudioManager.Instance.PlayBattleMusic();
+
+
             yield return null;
         }
 
@@ -475,9 +480,10 @@ namespace ShadowCraft
                 var selectedCard = effectedCards.Last();
                 effectedCards.Clear();
 
-                var reward = cardRewards.First(Reward => Reward.card == selectedCard);
+                var reward = cardRewards.FirstOrDefault(Reward => Reward.card == selectedCard);
 
-                player.AddToDeck(reward);
+                if (reward != null)
+                    player.AddReward(reward);
             }
 
             yield return TransitionToMainMenu();
@@ -555,6 +561,10 @@ namespace ShadowCraft
         public void AddCardToBoardSlot(CardWidget cardWidget, BoardSlot boardSlot, Player currentplayer)
         {
             var canPlaceCard = currentPlayer == player ? boardSlot.SlotNumber < 5 : boardSlot.SlotNumber > 4;
+
+            if (cardWidget.card.IsSpell())
+                canPlaceCard = true;
+
             int[] mastery = CanAffordMana(player, cardWidget.card.manaCost);
 
             if (!gameBoardWidget.GetIsSlotEmpty(boardSlot) || !canPlaceCard || mastery == null)
@@ -588,6 +598,10 @@ namespace ShadowCraft
         public void RemoveCardFromBoardSlot(CardWidget cardWidget)
         {
             var graveyard = currentPlayer == player ? OpponentGraveyard : PlayerGraveyard;
+
+            if (cardWidget.card.IsSpell())
+                graveyard = currentPlayer == player ? PlayerGraveyard : OpponentGraveyard;
+
             gameBoardWidget.RemoveCard(cardWidget.card.boardSlot, currentPlayer, graveyard);
         }
         public int[] CanAffordMana(Player player, int[] manaCost)
@@ -686,7 +700,7 @@ namespace ShadowCraft
         public GameBoardWidget GetGameBoard() => gameBoardWidget;
 
         #endregion
-
+        
         #region UI Actions
 
         public void OnMainMenu()
