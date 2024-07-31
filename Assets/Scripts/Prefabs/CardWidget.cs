@@ -139,7 +139,6 @@ namespace ShadowCraft
         public void ResetCard()
         {
             card.ResetCard();
-            card.ResetCard();
         }
     }
 }
