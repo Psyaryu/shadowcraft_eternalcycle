@@ -34,15 +34,18 @@ public class Bear : MonoBehaviour
 
         effectedCards = BattleManager.shared.effectedCards;
       
-        foreach (var card in effectedCards)
+        for (int i = 0; i < effectedCards.Count; i++)
         {
-            card.card.health -= (effectedCards[0].card.attack) / 2;
-
-            if (card.card.health <= 0)
+            if (i != 0)
             {
-                BattleManager.shared.otherCharacter.SendToGraveYard(card);
-                int extraDamage = math.abs(card.card.health);
-                BattleManager.shared.otherCharacter.TakeDamage(extraDamage);
+                effectedCards[i].card.health -= (effectedCards[0].card.attack) / 2;
+
+                if (effectedCards[i].card.health <= 0)
+                {
+                    BattleManager.shared.otherCharacter.SendToGraveYard(effectedCards[i]);
+                    int extraDamage = math.abs(effectedCards[i].card.health);
+                    BattleManager.shared.otherCharacter.TakeDamage(extraDamage);
+                }
             }
         }
     }

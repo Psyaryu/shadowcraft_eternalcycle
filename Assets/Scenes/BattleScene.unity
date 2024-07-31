@@ -970,6 +970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectedCards: []
+  effectedSlots: []
   cardPrefab: {fileID: 8098045742759277165, guid: 895751bcd343e4d7a8e82179ee290f47, type: 3}
   handParent: {fileID: 625794207}
   handParentEnemy: {fileID: 242325596}
@@ -978,6 +979,7 @@ MonoBehaviour:
   startingHand: 5
   gameBoardWidget: {fileID: 742841037}
   opponentCharacter: {fileID: 11400000, guid: 6da42caea29034b60a51da7e17ca4651, type: 2}
+  turnNumber: 0
   manaTextParent: {fileID: 1770873152}
 --- !u!4 &779792938
 Transform:

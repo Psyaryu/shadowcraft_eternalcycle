@@ -41,7 +41,7 @@ namespace ShadowCraft
         public int boardSlot = -1;
 
         public int[] manaCost = {0, 0, 0, 0, 0, 0};
-        public List<string> Tags = null;
+        public List<string> Tags = new List<string>();
 
         [TextArea]
         public string description = "This card does nothing!";

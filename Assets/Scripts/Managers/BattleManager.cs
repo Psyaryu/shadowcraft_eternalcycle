@@ -255,18 +255,19 @@ namespace ShadowCraft
 
                     if (card.card.Tags.Contains("Splash"))
                     {
+                        effectedCards.Clear();
                         effectedCards.Add(card);
-                        if(Oppositeslot != 0 || Oppositeslot != 4 || Oppositeslot != 5 || Oppositeslot != 9)
+                        if(!(Oppositeslot != 0 || Oppositeslot != 4 || Oppositeslot != 5 || Oppositeslot != 9))
                         {
                             int left = Oppositeslot - 1;
                             int right = Oppositeslot + 1;
 
-                            if (gameBoardWidget.CardSlots[left] != null)
+                            if (gameBoardWidget.CardSlots[left].card != null)
                             {
                                 effectedCards.Add(gameBoardWidget.CardSlots[left].card);
                             }
 
-                            if (gameBoardWidget.CardSlots[right] != null)
+                            if (gameBoardWidget.CardSlots[right].card != null)
                             {
                                 effectedCards.Add(gameBoardWidget.CardSlots[right].card);
                             }
@@ -276,7 +277,7 @@ namespace ShadowCraft
                         {
                             int right = Oppositeslot + 1;
 
-                            if(gameBoardWidget.CardSlots[right] != null)
+                            if(gameBoardWidget.CardSlots[right].card != null)
                             {
                                 effectedCards.Add(gameBoardWidget.CardSlots[right].card);
                             }
@@ -285,7 +286,7 @@ namespace ShadowCraft
                         {
                             int left = Oppositeslot - 1;
 
-                            if (gameBoardWidget.CardSlots[left] != null)
+                            if (gameBoardWidget.CardSlots[left].card != null)
                             {
                                 effectedCards.Add(gameBoardWidget.CardSlots[left].card);
                             }
@@ -294,7 +295,7 @@ namespace ShadowCraft
                         {
                             int right = Oppositeslot + 1;
 
-                            if (gameBoardWidget.CardSlots[right] != null)
+                            if (gameBoardWidget.CardSlots[right].card != null)
                             {
                                 effectedCards.Add(gameBoardWidget.CardSlots[right].card);
                             }
@@ -320,7 +321,7 @@ namespace ShadowCraft
                     MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
 
                     MethodInfo effectMethod = type.GetMethod("EffectAttack");
-
+                    if(effectMethod != null)
                     effectMethod.Invoke(scriptInstance, null);
 
                     CheckDeath(oppositeCard);
@@ -423,7 +424,7 @@ namespace ShadowCraft
                 MonoBehaviour scriptInstance1 = newObject1.AddComponent(type1) as MonoBehaviour;
 
                 MethodInfo effectMethod1 = type1.GetMethod("EffectDeath");
-
+                if(effectMethod1 != null)
                 effectMethod1.Invoke(scriptInstance1, null);
 
                 int extraDamage = math.abs(card.card.health);
@@ -496,8 +497,10 @@ namespace ShadowCraft
             MonoBehaviour scriptInstance = newObject.AddComponent(type) as MonoBehaviour;
 
             MethodInfo effectMethod = type.GetMethod("Effect");
-
+            if(effectMethod != null)
             effectMethod.Invoke(scriptInstance, null);
+
+            CheckDeath(cardWidget);
 
         }
         public void RemoveCardFromBoardSlot(CardWidget cardWidget)
