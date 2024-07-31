@@ -40,6 +40,9 @@ namespace ShadowCraft
         [TextArea]
         public string description = "This card does nothing!";
 
+        private int startingAtk = -1;
+        private int startingHealth = -1;
+
         public static CardWidget CreateCard(string cardName)
         {
             if (Enum.TryParse(cardName, out Cards cardType))
@@ -49,22 +52,24 @@ namespace ShadowCraft
 
                 if (type != null)
                 {
-                    GameObject card = new GameObject(className);
-                    // Create an instance of the card class
-                    MonoBehaviour cardInstance = card.AddComponent(type) as MonoBehaviour;
 
-                    CardWidget cardWidget = card.AddComponent<CardWidget>();
+                    var cardWidget = Instantiate(GameManager.shared.cardPrefab, GameManager.shared.cardParent);
+
+                    // Create an instance of the card class
+                    MonoBehaviour cardInstance = cardWidget.gameObject.AddComponent(type) as MonoBehaviour;
 
                     // Check if the instance has a 'ToCard' method
                     MethodInfo toCardMethod = type.GetMethod("ToCard");
                     if (toCardMethod != null)
                     {
                         Card cardObj = toCardMethod.Invoke(cardInstance, null) as Card;
+                        cardObj.startingAtk = cardObj.attack;
+                        cardObj.startingHealth = cardObj.health;
 
                         cardWidget.card = cardObj;
                         // Invoke the ToCard method and return the Card object
                         return cardWidget;
-                    }
+                    }   
                     else
                     {
                         Debug.LogError($"{className} does not have a ToCard method.");
@@ -81,6 +86,12 @@ namespace ShadowCraft
             }
 
             return null;
+        }
+
+        public void ResetCard()
+        {
+            attack = startingAtk;
+            health = startingHealth;
         }
     }
 }

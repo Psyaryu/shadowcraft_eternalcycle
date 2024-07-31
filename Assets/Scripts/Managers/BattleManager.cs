@@ -28,7 +28,7 @@ namespace ShadowCraft
         public List<Card> effectedCards = new List<Card>();
 
         [SerializeField]
-        CardWidget cardPrefab = null;
+        public CardWidget cardPrefab = null;
 
         [SerializeField]
         Transform handParent = null;
@@ -171,7 +171,14 @@ namespace ShadowCraft
 
         IEnumerator DrawPhase(Player player)
         {
-            var card = player.Draw().card;
+            var cardWidget = player.Draw();
+
+            if (cardWidget == null)
+                yield break;
+
+            cardWidget.ResetCard();
+
+            var card = cardWidget.card;
 
             if (card == null)
                 yield break;
@@ -179,15 +186,17 @@ namespace ShadowCraft
             Debug.Log($"{player.character.Name} Draw");
             if (player != opponent)
             {
-                var cardWidget = Instantiate(cardPrefab, handParent);
-                cardWidget.card = card;
+                var cardWidget2 = Instantiate(cardPrefab, handParent);
+                cardWidget2.card = card;
                 PositionHandCards();
             }
             else
             {
-                var cardWidget = Instantiate(cardPrefab, handParentEnemy);
-                cardWidget.card = card;
-              
+                //var cardWidget = Instantiate(cardPrefab, handParentEnemy);
+                //cardWidget.card = card;
+
+                cardWidget.transform.parent = handParentEnemy;
+
             }
         }
 
@@ -207,6 +216,8 @@ namespace ShadowCraft
 
 
             var otherCharacter = GetOtherCharacter(player);
+
+            var cardsToRemove = new List<CardWidget>();
 
             foreach (var card in player.field)
             {
@@ -230,13 +241,9 @@ namespace ShadowCraft
 
                     if (oppositeCard.card.health <= 0)
                     {
-                        //TODO: remove card from widget
-                        RemoveCardFromBoardSlot(gameBoardWidget.cards[Oppositeslot]);
-
                         otherCharacter.SendToGraveYard(oppositeCard);
                         int extraDamage = math.abs(oppositeCard.card.health);
                         otherCharacter.TakeDamage(extraDamage);
-
                     }
                 }
                 else
@@ -244,6 +251,11 @@ namespace ShadowCraft
                     otherCharacter.TakeDamage(card.card.attack);
                 }
             }
+
+            cardsToRemove.ForEach(Card => {
+                RemoveCardFromBoardSlot(Card);
+                otherCharacter.SendToGraveYard(Card);
+            });
 
             yield return null;
         }
@@ -447,6 +459,12 @@ namespace ShadowCraft
             }
 
             return mastery;
+        }
+
+        public void FreeBoardSlot(int boardSlot, Player player)
+        {
+            var graveyard = player == opponent ? OpponentGraveyard : PlayerGraveyard;
+            gameBoardWidget.RemoveCard(boardSlot, player, graveyard);
         }
 
         #endregion

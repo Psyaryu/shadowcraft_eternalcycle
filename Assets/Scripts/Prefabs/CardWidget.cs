@@ -24,9 +24,9 @@ namespace ShadowCraft
                 health = transform.Find("Health").GetComponent<TMP_Text>();
                 cardName = transform.Find("Name").GetComponent<TMP_Text>();
                 Transform manaTransform = transform.Find("Mana");
-                mana1 = transform.Find("Mana1").GetComponent<TMP_Text>();
-                mana2 = transform.Find("Mana2").GetComponent<TMP_Text>();
-                mana3 = transform.Find("Mana3").GetComponent<TMP_Text>();
+                mana1 = manaTransform.Find("Mana1").GetComponent<TMP_Text>();
+                mana2 = manaTransform.Find("Mana2").GetComponent<TMP_Text>();
+                mana3 = manaTransform.Find("Mana3").GetComponent<TMP_Text>();
                 description = transform.Find("Description").GetComponent<TMP_Text>();
 
                 attack.text = card.attack.ToString();
@@ -35,9 +35,6 @@ namespace ShadowCraft
                 description.text = card.description.ToString();
                 SetMana();
             }
-
-
-
 
         }
 
@@ -84,8 +81,6 @@ namespace ShadowCraft
                     }
                 }
             }
-
-
 
         }
         public void OnHoverEnter()
@@ -139,6 +134,12 @@ namespace ShadowCraft
 
             // I think I messed up and flipped the camera to the other side, so we have to reverse the directions so it works x.x
             transform.localPosition = new Vector3(-newLocation.x, -(newLocation.y + transform.parent.position.y), transform.localPosition.z);
+        }
+
+        public void ResetCard()
+        {
+            card.ResetCard();
+            card.ResetCard();
         }
     }
 }

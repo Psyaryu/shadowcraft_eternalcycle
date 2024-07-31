@@ -69,6 +69,8 @@ namespace ShadowCraft
             cardWidget.transform.parent = graveyard;
             cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
 
+            CardSlots[slot].SetCard(null);
+
             cards[slot] = null;
         }
 

@@ -14,6 +14,12 @@ namespace ShadowCraft
         [SerializeField]
         CharacterAsset opponentCharacter = null;
 
+        [SerializeField]
+        public CardWidget cardPrefab = null;
+
+        [SerializeField]
+        public Transform cardParent = null;
+
         public Player player = null;
         public AIPlayer ai = null;
 

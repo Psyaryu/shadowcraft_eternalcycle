@@ -30,7 +30,9 @@ namespace ShadowCraft
             var gameBoard = BattleManager.shared.GetGameBoard();
             var boardSlots = gameBoard.GetOpponentBoardSlots();
 
-            List<CardWidget> temphand = new List<CardWidget>(this.hand);
+            List<CardWidget> temphand = new List<CardWidget>(hand);
+
+            List<CardWidget> tempCard = new List<CardWidget>();
 
             foreach (var cardWidget in temphand)
             {
@@ -42,9 +44,14 @@ namespace ShadowCraft
                     BattleManager.shared.AddCardToBoardSlot(cardWidget, boardSlot, this);
 
                     if (boardSlot.GetIsFilled())
+                    {
+                        tempCard.Add(cardWidget);
                         break;
+                    }
                 }                
             }
+
+            //tempCard.ForEach(CardWidget => GameObject.Destroy(CardWidget.gameObject));
 
             yield return null;
         }

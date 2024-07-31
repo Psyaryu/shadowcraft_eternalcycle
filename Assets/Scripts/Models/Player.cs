@@ -44,7 +44,7 @@ namespace ShadowCraft
         public int[] SetProductionRate()
         {
 
-            switch (playerClass)
+            switch ("Fire")
             {
                 case "Fire":
                     int[] rate = { 1,1,1,1,1,1};
@@ -74,7 +74,9 @@ namespace ShadowCraft
             {
                 ShuffleGraveYard();
             }
-                
+
+            if (deck.Count == 0)
+                return null;
 
             var card = deck[0];
 
@@ -107,8 +109,6 @@ namespace ShadowCraft
         {
             graveyard.Add(cardWidget);
             field.Remove(cardWidget);
-
-
         }
 
         public void ShuffleDeck()
@@ -130,10 +130,7 @@ namespace ShadowCraft
             deck.AddRange(graveyard);
             ShuffleDeck();
 
-            foreach (var card in graveyard)
-            {
-                graveyard.Remove(card);
-            }
+            graveyard.Clear();
         }
 
         public void ShuffleHand()
