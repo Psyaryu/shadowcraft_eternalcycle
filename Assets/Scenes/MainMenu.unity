@@ -1583,7 +1583,7 @@ MonoBehaviour:
   playerCharacter: {fileID: 11400000, guid: 706abc022af7f4c7e9025bd08b41241b, type: 2}
   opponentCharacter: {fileID: 11400000, guid: 6da42caea29034b60a51da7e17ca4651, type: 2}
   cardPrefab: {fileID: 8098045742759277165, guid: 895751bcd343e4d7a8e82179ee290f47, type: 3}
-  cardParent: {fileID: 0}
+  cardParent: {fileID: 1192381472}
 --- !u!4 &2122740887
 Transform:
   m_ObjectHideFlags: 0
