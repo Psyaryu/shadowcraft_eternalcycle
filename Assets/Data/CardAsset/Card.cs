@@ -33,13 +33,17 @@ namespace ShadowCraft
         public ManaTypes cardType;
         public int attack = 1;
         public int health = 1;
+        public int boardSlot = -1;
 
         public int[] manaCost = {0, 0, 0, 0, 0, 0};
 
         [TextArea]
         public string description = "This card does nothing!";
 
-        public static Card CreateCard(string cardName)
+        private int startingAtk = -1;
+        private int startingHealth = -1;
+
+        public static CardWidget CreateCard(string cardName)
         {
             if (Enum.TryParse(cardName, out Cards cardType))
             {
@@ -48,16 +52,24 @@ namespace ShadowCraft
 
                 if (type != null)
                 {
+
+                    var cardWidget = Instantiate(GameManager.shared.cardPrefab, GameManager.shared.cardParent);
+
                     // Create an instance of the card class
-                    MonoBehaviour cardInstance = new GameObject(className).AddComponent(type) as MonoBehaviour;
+                    MonoBehaviour cardInstance = cardWidget.gameObject.AddComponent(type) as MonoBehaviour;
 
                     // Check if the instance has a 'ToCard' method
                     MethodInfo toCardMethod = type.GetMethod("ToCard");
                     if (toCardMethod != null)
                     {
+                        Card cardObj = toCardMethod.Invoke(cardInstance, null) as Card;
+                        cardObj.startingAtk = cardObj.attack;
+                        cardObj.startingHealth = cardObj.health;
+
+                        cardWidget.card = cardObj;
                         // Invoke the ToCard method and return the Card object
-                        return toCardMethod.Invoke(cardInstance, null) as Card;
-                    }
+                        return cardWidget;
+                    }   
                     else
                     {
                         Debug.LogError($"{className} does not have a ToCard method.");
@@ -74,6 +86,12 @@ namespace ShadowCraft
             }
 
             return null;
+        }
+
+        public void ResetCard()
+        {
+            attack = startingAtk;
+            health = startingHealth;
         }
     }
 }

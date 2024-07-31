@@ -14,8 +14,14 @@ namespace ShadowCraft
         [SerializeField]
         CharacterAsset opponentCharacter = null;
 
+        [SerializeField]
+        public CardWidget cardPrefab = null;
+
+        [SerializeField]
+        public Transform cardParent = null;
+
         public Player player = null;
-        public Player ai = null;
+        public AIPlayer ai = null;
 
         private void Awake()
         {
@@ -27,7 +33,8 @@ namespace ShadowCraft
             DontDestroyOnLoad(shared);
 
             player = new Player(playerCharacter);
-            ai = new AIPlayer(opponentCharacter);
+            
+            
         }
     }
 }

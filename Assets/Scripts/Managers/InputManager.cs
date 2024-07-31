@@ -64,6 +64,9 @@ namespace ShadowCraft
 
             var card = hitInfo.collider.gameObject.GetComponentInParent<CardWidget>();
 
+            if (card == null)
+                card = hitInfo.collider.transform.parent.GetComponentInParent<CardWidget>();
+
             if (!IsHover)
             {
                 currentCard?.OnHoverExit();

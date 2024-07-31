@@ -26,7 +26,7 @@ namespace ShadowCraft
         [SerializeField]
         GameObject boardGameObject = null;
 
-        CardWidget[] cards = null;
+        public CardWidget[] cards = null;
 
         #endregion
 
@@ -48,10 +48,11 @@ namespace ShadowCraft
             if (boardSlot.SlotNumber >= CardSlots.Count)
                 return;
 
-            cardWidget.transform.parent = boardSlot.transform;
+            cardWidget.transform.SetParent(boardSlot.transform);
             cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
             cards[boardSlot.SlotNumber] = cardWidget;
-            boardSlot.SetCard(cardWidget.card);
+            cardWidget.card.boardSlot = boardSlot.SlotNumber;
+            boardSlot.SetCard(cardWidget);
         }
 
         public void MoveCard(int fromSlot, int toSlot)
@@ -61,8 +62,15 @@ namespace ShadowCraft
             cards[fromSlot] = null;
         }
 
-        public void RemoveCard(int slot)
+        public void RemoveCard(int slot, Player player, Transform graveyard)
         {
+            var cardWidget = cards[slot];
+            player.SendToGraveYard(cardWidget);
+            cardWidget.transform.parent = graveyard;
+            cardWidget.transform.localPosition = new Vector3(0, 0, -0.5f);
+
+            CardSlots[slot].SetCard(null);
+
             cards[slot] = null;
         }
 

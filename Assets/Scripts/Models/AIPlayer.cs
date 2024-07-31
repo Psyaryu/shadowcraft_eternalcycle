@@ -6,42 +6,55 @@ namespace ShadowCraft
 {
     public class AIPlayer : Player
     {
+        
         public AIPlayer(CharacterAsset characterAsset) : base(characterAsset)
         {
-
+            identity = 0;
         }
 
-        protected override void SetDeck()
+        public override void SetDeck()
         {
+         
             StartingDecksManager.shared.SetBaseEnemyDeck(this);
         }
 
-        public override Card Draw()
+        public override CardWidget Draw()
         {
-            base.Draw();
-            return null;
+            CardWidget card = base.Draw();
+            return card;
         }
-
+        
         public override IEnumerator StandByPhase()
         {
+
             var gameBoard = BattleManager.shared.GetGameBoard();
             var boardSlots = gameBoard.GetOpponentBoardSlots();
 
-            foreach (var card in hand)
+            List<CardWidget> temphand = new List<CardWidget>(hand);
+
+            List<CardWidget> tempCard = new List<CardWidget>();
+
+            foreach (var cardWidget in temphand)
             {
                 foreach (var boardSlot in boardSlots)
                 {
                     if (!BattleManager.shared.CanPlaceCardInSlot(boardSlot))
                         continue;
 
-                    BattleManager.shared.AddCardToBoardSlot(card, boardSlot);
+                    BattleManager.shared.AddCardToBoardSlot(cardWidget, boardSlot, this);
 
                     if (boardSlot.GetIsFilled())
+                    {
+                        tempCard.Add(cardWidget);
                         break;
+                    }
                 }                
             }
+
+            //tempCard.ForEach(CardWidget => GameObject.Destroy(CardWidget.gameObject));
 
             yield return null;
         }
     }
+       
 }

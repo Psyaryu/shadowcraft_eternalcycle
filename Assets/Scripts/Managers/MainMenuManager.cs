@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +13,7 @@ namespace ShadowCraft
 
         private void Start()
         {
-            AudioManager.Instance.PlayAudio(audioClip, "Background");
+            AudioManager.Instance.PlayAudio(audioClip);
         }
 
         public void OnAdventure()
@@ -20,6 +23,12 @@ namespace ShadowCraft
 
         public void OnBattle()
         {
+            StartCoroutine(PlayBattle());
+        }
+
+        IEnumerator PlayBattle()
+        {
+            yield return AudioManager.Instance.PlayFadeOutAudio();
             SceneManager.LoadScene("BattleScene", LoadSceneMode.Single);
         }
     }
