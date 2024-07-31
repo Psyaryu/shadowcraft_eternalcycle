@@ -11,8 +11,8 @@ namespace ShadowCraft
         [SerializeField]
         CharacterAsset playerCharacter = null;
 
-        [SerializeField]
-        CharacterAsset opponentCharacter = null;
+        //[SerializeField]
+        //CharacterAsset opponentCharacter = null;
 
         [SerializeField]
         public CardWidget cardPrefab = null;
@@ -33,8 +33,6 @@ namespace ShadowCraft
             DontDestroyOnLoad(shared);
 
             player = new Player(playerCharacter);
-            
-            
         }
     }
 }
