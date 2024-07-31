@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class RedDragon : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 7, 0, 0, 0, 0 };
     int health = 7;
     int attack = 0;
     string description = "Attack is the difference of light and dark spaces";

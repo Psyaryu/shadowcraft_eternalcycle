@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class FlameSpirit : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 3, 1, 0, 2, 0, 0 };
     int health = 2;
     int attack = 2;
     string description = "Attacks two random opponents each turn";

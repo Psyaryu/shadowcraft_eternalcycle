@@ -7,7 +7,7 @@ using System;
 
 public class Torch : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 3, 0, 0, 0, 0 };
     int health = 0;
     int attack = 0;
     string description = "Light up a space for 3 turns";

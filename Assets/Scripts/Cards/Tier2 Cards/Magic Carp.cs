@@ -8,7 +8,7 @@ using Unity.Mathematics;
 
 public class MagicCarp : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 2, 2, 0, 0 };
     int health = 1;
     int attack = 0;
     string description = "Creature. Deals 50% attack to adjacent enemies";

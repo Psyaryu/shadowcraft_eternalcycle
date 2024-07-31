@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class DarkPact : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 0, 0, 4 };
     int health = 0;
     int attack = 0;
     string description = "Draw 2 cards and take 3 damage";

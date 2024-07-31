@@ -8,7 +8,7 @@ using Unity.Mathematics;
 
 public class Bear : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 3, 2, 0, 2, 0, 0 };
     int health = 3;
     int attack = 2;
     string description = "Creature. Deals 50% damage to adjecent cards";

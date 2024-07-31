@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class Nightmare : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 2, 1, 3, 0 };
     int health = 4;
     int attack = 2;
     string description = "Can only be damaged while on a light tile ";

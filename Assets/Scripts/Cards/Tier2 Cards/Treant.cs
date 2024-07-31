@@ -8,7 +8,7 @@ using Unity.Mathematics;
 
 public class Treant : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 3, 0, 2, 1, 0, 0 };
     int health = 2;
     int attack = 2;
     string description = "Creature. +0/+3 when played on a light tile";

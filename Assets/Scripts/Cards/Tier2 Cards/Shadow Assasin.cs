@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class ShadowAssasin : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 2, 0, 0, 4, 2 };
     int health = 2;
     int attack = 0;
     string description = "+4/0 while on dark tile";

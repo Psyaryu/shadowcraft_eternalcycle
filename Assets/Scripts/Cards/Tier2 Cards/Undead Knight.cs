@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class UndeadKnight : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 0, 0, 5 };
     int health = 5;
     int attack = 3;
     string description = "-1 health if placed in light";

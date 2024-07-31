@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class YinYang : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 2, 2, 0 };
     int health = 0;
     int attack = 0;
     string description = "Spell. 5 dmg to enemy if 50% or more of board dark, 5 healing to player if 50%+ light";

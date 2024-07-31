@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class ChaosBringer : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 3, 5, 0, 0, 0, 3 };
     int health = 4;
     int attack = 4;
     string description = "Swaps light and dark tiles for 1 turn, and attacks adjacet enemys for 50% damage";

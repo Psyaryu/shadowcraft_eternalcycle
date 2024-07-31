@@ -8,7 +8,7 @@ using System.Linq;
 
 public class DarkRitual : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 0, 5, 0 };
     int health = 0;
     int attack = 0;
     string description = "Spell. Sacrafice a minion on a dark space and deal 2 damage to 3 random enemys";

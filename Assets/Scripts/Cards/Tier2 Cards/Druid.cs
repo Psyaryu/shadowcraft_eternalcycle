@@ -7,7 +7,7 @@ using System;
 
 public class Druid : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 5, 0, 0 };
     int health = 4;
     int attack = 0;
     string description = "Raises all creture's attack by 2";

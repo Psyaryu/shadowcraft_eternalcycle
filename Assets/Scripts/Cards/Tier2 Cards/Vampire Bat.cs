@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class VampireBat : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 2, 0, 3, 2 };
     int health = 3;
     int attack = 2;
     string description = "Creature. Heals for damage done in dark ";

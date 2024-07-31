@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class Whirlpool : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 0, 0, 0, 2, 2, 0 };
     int health = 0;
     int attack = 0;
     string description = "Spell. Switch position of two cards on your side";

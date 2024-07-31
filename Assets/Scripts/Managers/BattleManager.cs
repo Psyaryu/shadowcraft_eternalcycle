@@ -559,6 +559,11 @@ namespace ShadowCraft
         {
             if (card.card.health <= 0)
             {
+                if(otherCharacter == null)
+                {
+                    currentPlayer.SendToGraveYard(card);
+                }
+                else
                 otherCharacter.SendToGraveYard(card);
                 effectedSlots.Clear();
                 effectedSlots.Add(gameBoardWidget.CardSlots[card.card.boardSlot]);
@@ -574,7 +579,14 @@ namespace ShadowCraft
 
                 int extraDamage = math.abs(card.card.health);
                 if (!card.card.Tags.Contains("Breath"))
-                    otherCharacter.TakeDamage(extraDamage);
+                {
+                    if (otherCharacter == null)
+                    {
+                       
+                    }
+                    else
+                        otherCharacter.TakeDamage(extraDamage);
+                }
             }
         }
 

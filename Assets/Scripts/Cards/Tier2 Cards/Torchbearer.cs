@@ -8,7 +8,7 @@ using static ShadowCraft.BoardSlot;
 
 public class Torchbearer : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 2, 3, 0, 0, 0, 0 };
     int health = 2;
     int attack = 1;
     string description = "Adds 1 torch to hand when played";
@@ -23,13 +23,10 @@ public class Torchbearer : MonoBehaviour
     #endregion
     public void Effect()
     {
+        BattleManager.shared.currentPlayer.AddToDeck("Torch");
+        StartCoroutine(BattleManager.shared.DrawPhase(BattleManager.shared.currentPlayer));
 
-        CardWidget newCard = Card.CreateCard("Torch");
-
-        if (newCard != null)
-        {
-            BattleManager.shared.currentPlayer.hand.Add(newCard);
-        }
+       
         BattleManager.shared.PositionHandCards();
     }
     public void EffectBattle()

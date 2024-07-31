@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 public class Paladin : MonoBehaviour
 {
-    int[] ManaCost = { 0, 0, 0, 0, 0, 0 };
+    int[] ManaCost = { 2, 0, 2, 3, 0, 0 };
     int health = 4;
     int attack = 2;
     string description = "Attacks adjecent enemys for 50% damage on light tiles ";
